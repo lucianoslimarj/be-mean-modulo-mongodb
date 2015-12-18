@@ -4,20 +4,20 @@
 **Data:** 18/12/2015 
 
 ## Qual a diferença entre Autenticação e Autorização?
-´´´
-	Autenticação é o processo no qual se verifica a identidade de um usuário  ( ou cliente ). Existe várias formas de autenticar um usuário, porém a forma
-mais comum é através de um par de credenciais: usuário e senha.
-Autorização é o processo que vai determinar quais as operações em quais recursos um determinadao usuário, autenticado, tem acesso. Basicamente, existem 2 tipos
-principais de autorização: por roles ( RBAC ) e por atributos (ABAC). O RBAC é mais fácil de administrar, porém pode apresentar uma explosão no número das roles (
-o que torna a administração ruim). O ABAC é mais flexível e consegue-se atender situações onde o RBAC não atinge. O problema do ABAC é seu controle e ratreabilidade dos acessos.
-´´´
+	´´´
+		Autenticação é o processo no qual se verifica a identidade de um usuário  ( ou cliente ). Existe várias formas de autenticar um usuário, porém a forma
+	mais comum é através de um par de credenciais: usuário e senha.
+	Autorização é o processo que vai determinar quais as operações em quais recursos um determinadao usuário, autenticado, tem acesso. Basicamente, existem 2 tipos
+	principais de autorização: por roles ( RBAC ) e por atributos (ABAC). O RBAC é mais fácil de administrar, porém pode apresentar uma explosão no número das roles (
+	o que torna a administração ruim). O ABAC é mais flexível e consegue-se atender situações onde o RBAC não atinge. O problema do ABAC é seu controle e ratreabilidade dos acessos.
+	´´´
 
 
 ## Descreva aqui o passo-a-passo como criar um usuário administrador e um usuário comum.
 
-´´´
-  A criação de usuários no mongoDB é feita pelo comando 'db.createUser' diretamente ou passando o createUser dentro do comando 'db.runCommand(...)'
-  A estrutura dos dados do usuário a ser criado, é bem parecida nas duas maneiras. Uma das informações passadas na criação de usuário são as roles que 
+	´´´
+	A criação de usuários no mongoDB é feita pelo comando 'db.createUser' diretamente ou passando o createUser dentro do comando 'db.runCommand(...)'
+	A estrutura dos dados do usuário a ser criado, é bem parecida nas duas maneiras. Uma das informações passadas na criação de usuário são as roles que 
   novo usuário terá. Essas roles, que podem ser nativas ( do MongoDB ) ou criadas, concedem privilégios, que são os comandos ou operações em recursos ( 
   banco de dados, coleção, sistema com um todo, ... ). Assim, para criar um usuário administrador é necessário conceder alguma(s) role(s) que darão o poder de
   administrador ao usuário. Por outro lado, um usuário comum, poderia ser criado sem qualquer role. A  exercício, não sei o que um usuário criado
@@ -56,13 +56,14 @@ o que torna a administração ruim). O ABAC é mais flexível e consegue-se aten
 					 roles: ["read"]  --ou roles: []
 	} )
 	
-´´´
+	´´´
 
 ## Explique cada papel listado em Cluster Administration Roles.
-  Uma role define um conjunto de privilégios, que são ações que podem ser executadas em recursos ( banco de dados, coleções, sistema como um todo - que inclui réplicas e sharding).
-  Temos alguns roles que se aplicam a qualquer banco de dados e temos um conjunto que são específicas ao banco 'admin'. As roles de administração de cluster são deste último tipo e não 
-  dizem respeito a apenas réplica e cluster.
-  
+	´´´
+		Uma role define um conjunto de privilégios, que são ações que podem ser executadas em recursos ( banco de dados, coleções, sistema como um todo - que inclui réplicas e sharding).
+	Temos alguns roles que se aplicam a qualquer banco de dados e temos um conjunto que são específicas ao banco 'admin'. As roles de administração de cluster são deste último tipo e não 
+	dizem respeito a apenas réplica e cluster.
+	´´´
   clusterMonitor
   
 	Possibilita acesso de leitura aos dados a partir de algum ferramenta de monitoramento, tipo o MongoDB Cloud Manager.
