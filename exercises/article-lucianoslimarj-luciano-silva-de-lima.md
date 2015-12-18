@@ -4,7 +4,6 @@
 **Data:** 18/12/2015 
 
 ## Qual a diferença entre Autenticação e Autorização?
-
 ´´´
 	Autenticação é o processo no qual se verifica a identidade de um usuário  ( ou cliente ). Existe várias formas de autenticar um usuário, porém a forma
 mais comum é através de um par de credenciais: usuário e senha.
