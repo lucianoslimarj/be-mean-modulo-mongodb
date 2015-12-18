@@ -4,6 +4,7 @@
 **Data:** 18/12/2015 
 
 ## Qual a diferença entre Autenticação e Autorização?
+
 ´´´
 	Autenticação é o processo no qual se verifica a identidade de um usuário  ( ou cliente ). Existe várias formas de autenticar um usuário, porém a forma
 mais comum é através de um par de credenciais: usuário e senha.
@@ -55,7 +56,8 @@ o que torna a administração ruim). O ABAC é mais flexível e consegue-se aten
 					 pwd: "comum123",
 					 roles: ["read"]  --ou roles: []
 	} )
-)
+	
+´´´
 
 ## Explique cada papel listado em Cluster Administration Roles.
   Uma role define um conjunto de privilégios, que são ações que podem ser executadas em recursos ( banco de dados, coleções, sistema como um todo - que inclui réplicas e sharding).
