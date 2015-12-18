@@ -3,7 +3,7 @@
 **Data:** Date.now() //em timestamp
 *1 asterítico*
 **2 asteríticos**
-***3 asteríticos***
+*****3 asteríticos*****
 
 # um jogo 
 da velha #
