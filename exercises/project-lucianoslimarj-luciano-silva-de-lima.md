@@ -15,7 +15,7 @@
    Em contra-partida, o mongoDB pode ser usado em uma grande variedade de aplicações: e-commerce, chats, blogs, web analystics, analytics em tempo real, análise de logs de aplicação, etc...
 
 ## Qual a modelagem da sua coleção de `users`?
-´´´
+```
   users:{
   	name: String,
 	bio : String,
@@ -33,11 +33,9 @@
 		disabled: Boolean,
 		hashToken: String
 	}
-  }
-´´´
   --retirar o campo username ? Fazer login pelo email ?
   --Criar indice unico para email e/ou username ?
-  
+```
 ## Qual a modelagem da sua coleção de `projects`?
 
 	Considerações: Embora na modelagem, as realocações apresentam-se com sendo 1:1, o documento foi modelado podendo apresentar várias realocações e ainda
