@@ -118,9 +118,9 @@
 	}]
 ```				
 ## Create - cadastro
-```
-### 1. Cadastre 10 usuários diferentes
 
+### 1. Cadastre 10 usuários diferentes
+```
 	   var vetUsuarios = [
 		"Francisco Antunes", 
 		"Maiara Cordovil", 
