@@ -5,10 +5,13 @@
 ## Para qual sistema você usaria o MongoDB (diferente desse)?
 ```
    Vou mudar a pergunta para: "Para qual sistema você não usaria o MongoDB ?"
+   
    Não usaria o mongoDB para aplicações em 2 situações:
+   
      1. Aplicações com operações complexas que envolvam vários grupos de dados.
 	 2. Aplicações que REALMENTE requerem transações ACID ( Atomicity, Consistency, Isolation e Durability). Não dando alternativa para transações BASE
 	    (Basic Availability, Soft-state e Eventual consistency)
+		
    Uma tipo de aplicação que se enquadra nesta categoria são as aplicações financeiras, principalmente aquelas envolvendo transações bancárias. Nestas
    aplicações muito provável que uma única operação envolva atualizações em mais de um documento ( contas, movimentações) e o MongoDB não garante a atomicidade
    quando mais de um documento é envolvido.
@@ -16,8 +19,8 @@
 ```
 ## Qual a modelagem da sua coleção de `users`?
 ```
-  users:{
-  	name: String,
+	users:{
+	name: String,
 	bio : String,
 	registerDate: Date,
 	avatarPath  : String,
@@ -33,11 +36,14 @@
 		disabled: Boolean,
 		hashToken: String
 	}
-  --retirar o campo username ? Fazer login pelo email ?
-  --Criar indice unico para email e/ou username ?
+	db.users.createIndex( {username: 1},{unique:true} )
+	
+	--retirar o campo username ? Fazer login pelo email ?
+	--Criar indice unico para email e/ou username ?
 ```
 ## Qual a modelagem da sua coleção de `projects`?
 
+```
 	Considerações: Embora na modelagem, as realocações apresentam-se com sendo 1:1, o documento foi modelado podendo apresentar várias realocações e ainda
     com a flexibilidade de termos mais alguma informação ( além da data ) no processo de realocação.
 	
@@ -85,10 +91,11 @@
 			}]
 		}]
 	}
-
+```
 ## Qual a modelagem da sua coleção retirada de `projects`?
-	
+```	
 	A coleção candidata a não ser um documento embutido na coleção de projetos é a coleção de 'comments'. Dois motivos me fizeram a esta escolha:
+	
 			1. A quantidade de comentários em uma atividade é algo difícil de ser mensurado antecipadamente, o que pode levar a coleção crescer além da
 				"folga" determinada. Isso levaria a um cenário de realocações de documentos e posterior fragmentação da coleção.
 			2. Em cenários bastante específico é que o usuario final deseja ver os comentários. Não faz sentido sempre que buscar uma atividade já trazer todos
@@ -109,9 +116,9 @@
 			weight: Integer
 		}]
 	}]
-				
+```				
 ## Create - cadastro
-
+```
 	1. Cadastre 10 usuários diferentes
 
 	   var vetUsuarios = [
@@ -152,10 +159,13 @@
 			usu.auth.lastAccess = new Date(usu.registerDate.getTime() +  ( _rand() * ((new Date()).getTime() - usu.registerDate.getTime()) ));
 			db.users.insert(usu);
 	   });
-
+```
 	   > db.users.count()
+```
 		10
+```		
 	   > db.users.findOne()
+```
 		{
 				"_id" : ObjectId("56976f3db2e3492ffc79d4f8"),
 				"name" : "Francisco Antunes",
@@ -175,7 +185,9 @@
 						"hashToken" : "AaYYYyyNOPGaa_"
 				}
 		}
+```		
 		> db.users.find({},{"_id":1});
+```		
 		{ "_id" : ObjectId("56976f3db2e3492ffc79d4f8") }
 		{ "_id" : ObjectId("56976f3eb2e3492ffc79d4f9") }
 		{ "_id" : ObjectId("56976f3eb2e3492ffc79d4fa") }
@@ -186,6 +198,7 @@
 		{ "_id" : ObjectId("56976f3eb2e3492ffc79d4ff") }
 		{ "_id" : ObjectId("56976f3eb2e3492ffc79d500") }
 		{ "_id" : ObjectId("56976f3eb2e3492ffc79d501") }
+```		
   
 ## Retrieve - busca
 
