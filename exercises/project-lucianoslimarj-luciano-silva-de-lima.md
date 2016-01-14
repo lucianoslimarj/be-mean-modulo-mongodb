@@ -3,7 +3,7 @@
 **Data** Date.now() //em timestamp
 
 ## Para qual sistema você usaria o MongoDB (diferente desse)?
-
+```
    Vou mudar a pergunta para: "Para qual sistema você não usaria o MongoDB ?"
    Não usaria o mongoDB para aplicações em 2 situações:
      1. Aplicações com operações complexas que envolvam vários grupos de dados.
@@ -13,7 +13,7 @@
    aplicações muito provável que uma única operação envolva atualizações em mais de um documento ( contas, movimentações) e o MongoDB não garante a atomicidade
    quando mais de um documento é envolvido.
    Em contra-partida, o mongoDB pode ser usado em uma grande variedade de aplicações: e-commerce, chats, blogs, web analystics, analytics em tempo real, análise de logs de aplicação, etc...
-
+```
 ## Qual a modelagem da sua coleção de `users`?
 ```
   users:{
