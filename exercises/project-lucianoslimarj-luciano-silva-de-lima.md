@@ -160,11 +160,11 @@
 			db.users.insert(usu);
 	   });
 ```
-	   > db.users.count()
+> db.users.count()
 ```
 		10
 ```		
-	   > db.users.findOne()
+> db.users.findOne()
 ```
 		{
 				"_id" : ObjectId("56976f3db2e3492ffc79d4f8"),
@@ -186,7 +186,7 @@
 				}
 		}
 ```		
-		> db.users.find({},{"_id":1});
+> db.users.find({},{"_id":1});
 ```		
 		{ "_id" : ObjectId("56976f3db2e3492ffc79d4f8") }
 		{ "_id" : ObjectId("56976f3eb2e3492ffc79d4f9") }
