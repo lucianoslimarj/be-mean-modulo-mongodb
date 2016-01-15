@@ -199,7 +199,19 @@
 		{ "_id" : ObjectId("56976f3eb2e3492ffc79d500") }
 		{ "_id" : ObjectId("56976f3eb2e3492ffc79d501") }
 ```		
+### 2. Cadastre 5 projetos diferentes
+
+	- cada um com 5 membros, sempre diferentes dentro dos projetos;
+	- cada um com pelo menos 3 tags diferentes;
+		- escolha 1 tag onde deva ficar em 2 projetos;
+		- escolha 1 tag onde deva ficar em 3 projetos;
+	- cada projeto com pelo menos 1 goal;
+		- cada goal com pelo menos 3 tags;
+		- cada goal com pelo menos 2 atividades, deixe 1 projeto sem.
   
+> var usu_cursor = db.users.find({},{_id:1,name:1})
+> var usu_array = usu_cursor.toArray()
+
 ## Retrieve - busca
 
 ## Update - alteração
