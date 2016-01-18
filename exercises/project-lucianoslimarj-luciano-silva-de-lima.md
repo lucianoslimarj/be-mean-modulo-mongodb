@@ -607,11 +607,11 @@
 	}
 ```
 ```
-> db.projects.find({}).forEach(function(project){ 
-    project.members.forEach(function(member){ 
-       print("project: " + project._id + " -> member: " + member.user_id ); 
-   }); 
-  }) 
+	> db.projects.find({}).forEach(function(project){ 
+		project.members.forEach(function(member){ 
+		   print("project: " + project._id + " -> member: " + member.user_id ); 
+	   }); 
+	  }) 
   
 	project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a93
 	project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a94
@@ -641,6 +641,16 @@
 ```
  
 ## Retrieve - busca
+
+### 1. Liste as informações dos membros de 1 projeto específico que deve ser buscado pelo seu nome de forma a não ligar para maiúsculas e minúsculas.
+
+### 2. Liste todos os projetos com a tag que você escolheu para os 3 projetos em comum.
+
+### 3. Liste apenas os nomes de todas as atividades para todos os projetos.
+
+### 4. Liste todos os projetos que não possuam uma tag.
+
+### 5. Liste todos os usuários que não fazem parte do primeiro projeto cadastrado
 
 ## Update - alteração
 
