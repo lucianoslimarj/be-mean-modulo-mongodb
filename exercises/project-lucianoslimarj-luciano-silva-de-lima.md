@@ -613,6 +613,7 @@ db.projects.find({}).forEach(function(project){
 	   print("project: " + project._id + " -> member: " + member.user_id ); 
    }); 
 }) 
+
 project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a93
 project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a94
 project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a95
