@@ -252,7 +252,7 @@
 	- cada projeto com pelo menos 1 goal;
 		- cada goal com pelo menos 3 tags;
 		- cada goal com pelo menos 2 atividades, deixe 1 projeto sem.
-		
+
 ```
     // Monta o array de projetos com algumas informações fixas. Após, algumas informações dinâmicas são preenchidas.
     var vetProjects = [
