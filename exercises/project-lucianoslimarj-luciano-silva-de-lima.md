@@ -641,7 +641,9 @@ project: 569cd21a5114717dd2af2aa1 -> member: 569cd0535114717dd2af2a9b
 
 ##Retrieve - busca
 ### 1. Liste as informações dos membros de 1 projeto específico que deve ser buscado pelo seu nome de forma a não ligar para maiúsculas e minúsculas.
->> db.projects.find({name:/CArRO MOvido À Água/i},{members:1}).pretty()
+
+> db.projects.find({name:/CArRO MOvido À Água/i},{members:1}).pretty()
+
 ```
 {
 	"_id" : ObjectId("569cd21a5114717dd2af2a9d"),
