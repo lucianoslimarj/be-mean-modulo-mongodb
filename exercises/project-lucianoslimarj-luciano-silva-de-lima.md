@@ -608,12 +608,11 @@
 ```
 ## Teste Bold
 ```
-> db.projects.find({}).forEach(function(project){ 
+db.projects.find({}).forEach(function(project){ 
 	project.members.forEach(function(member){ 
 	   print("project: " + project._id + " -> member: " + member.user_id ); 
    }); 
-  }) 
-
+}) 
 project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a93
 project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a94
 project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a95
@@ -639,7 +638,6 @@ project: 569cd21a5114717dd2af2aa1 -> member: 569cd0535114717dd2af2a98
 project: 569cd21a5114717dd2af2aa1 -> member: 569cd0535114717dd2af2a99
 project: 569cd21a5114717dd2af2aa1 -> member: 569cd0535114717dd2af2a9a
 project: 569cd21a5114717dd2af2aa1 -> member: 569cd0535114717dd2af2a9b
-
 ```
 
 ## Teste Bold
