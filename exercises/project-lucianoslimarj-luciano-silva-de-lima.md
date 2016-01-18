@@ -119,12 +119,6 @@
 ```				
 ## Create - cadastro
 
-## Retrieve - busca
-
-### 1. Liste as informações dos membros de 1 projeto específico que deve ser buscado pelo seu nome de forma a não ligar para maiúsculas e minúsculas.
-```
-ddd
-```
 ### 1. Cadastre 10 usuários diferentes
 ```
 		//Total de milisegundos em um ano
@@ -645,12 +639,14 @@ ddd
 	project: 569cd21a5114717dd2af2aa1 -> member: 569cd0535114717dd2af2a9a
 	project: 569cd21a5114717dd2af2aa1 -> member: 569cd0535114717dd2af2a9b
 ```
+
 ## Retrieve - busca
 
 ### 1. Liste as informações dos membros de 1 projeto específico que deve ser buscado pelo seu nome de forma a não ligar para maiúsculas e minúsculas.
 ```
 ddd
 ```
+
 ### 2. Liste todos os projetos com a tag que você escolheu para os 3 projetos em comum.
 
 ### 3. Liste apenas os nomes de todas as atividades para todos os projetos.
@@ -668,4 +664,3 @@ ddd
 
 ## Replica
 // coloque aqui todos os comandos que você executou
-
