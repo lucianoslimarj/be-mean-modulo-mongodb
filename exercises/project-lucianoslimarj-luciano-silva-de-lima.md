@@ -352,7 +352,7 @@
 					{user_id:null, type:"agente de segurança", notify:null},
 					{user_id:null, type:"piloto", notify:null}
 			],
-			tags:["governo","clima","desmatamento"],
+			tags:["polícia","clima","desmatamento"],
 			goals: [
 					{name: "Reduzir o desmatamento em 40%",
 					 description: "Com um controle rígido, identificaremos de imediato os grandes desmatadores." ,
@@ -512,6 +512,36 @@
 		db.projects.insert(project);	
 	}
 ```	
+> db.projects.createIndex({tags:1})
+```
+{
+        "createdCollectionAutomatically" : false,
+        "numIndexesBefore" : 1,
+        "numIndexesAfter" : 2,
+        "ok" : 1
+}
+```
+> db.projects.getIndexes()
+```
+[
+        {
+                "v" : 1,
+                "key" : {
+                        "_id" : 1
+                },
+                "name" : "_id_",
+                "ns" : "be-mean-final.projects"
+        },
+        {
+                "v" : 1,
+                "key" : {
+                        "tags" : 1
+                },
+                "name" : "tags_1",
+                "ns" : "be-mean-final.projects"
+        }
+]
+```
 > db.projects.count()
 ```
 	5
@@ -519,26 +549,144 @@
 > db.projects.findOne()
 ```
 	{
-        "_id" : ObjectId("569cd21a5114717dd2af2a9d"),
-        "name" : "Carro movido à água",
-        "description" : "Construção de automóveis que utilizam água como combustível.",
-        "startDate" : ISODate("2016-09-05T18:06:09.140Z"),
-        "endDate" : ISODate("2016-12-15T22:49:56.078Z"),
-        "dreamDate" : ISODate("2016-12-02T05:13:31.007Z"),
-        "visible" : true,
-        "realocate" : false,
-        "expired" : true,
-        "visualizableMod" : false,
+			"_id" : ObjectId("569d7ac25114717dd2af2aa2"),
+			"name" : "Carro movido à água",
+			"description" : "Construção de automóveis que utilizam água como combustível.",
+			"startDate" : ISODate("2016-11-30T23:32:05.683Z"),
+			"endDate" : ISODate("2016-12-28T12:03:49.852Z"),
+			"dreamDate" : ISODate("2016-12-08T15:32:05.257Z"),
+			"visible" : true,
+			"realocate" : false,
+			"expired" : false,
+			"visualizableMod" : false,
+			"members" : [
+					{
+							"user_id" : ObjectId("569cd0535114717dd2af2a93"),
+							"type" : "idealizador",
+							"notify" : false
+					},
+					{
+							"user_id" : ObjectId("569cd0535114717dd2af2a94"),
+							"type" : "engenheiro",
+							"notify" : true
+					},
+					{
+							"user_id" : ObjectId("569cd0535114717dd2af2a95"),
+							"type" : "mecanico",
+							"notify" : false
+					},
+					{
+							"user_id" : ObjectId("569cd0535114717dd2af2a96"),
+							"type" : "eletricista",
+							"notify" : false
+					},
+					{
+							"user_id" : ObjectId("569cd0535114717dd2af2a97"),
+							"type" : "montador",
+							"notify" : false
+					}
+			],
+			"tags" : [
+					"tranporte",
+					"inovação",
+					"ciências"
+			],
+			"goals" : [
+					{
+							"name" : "Viabilização do Projeto",
+							"description" : "Certificar cientificamente que o projeto é víável de acordo com os conhecimentos físicos e mecânicos existentes.",
+							"startDate" : ISODate("2016-12-17T06:58:41.271Z"),
+							"endDate" : ISODate("2016-12-27T18:40:45.743Z"),
+							"dreamDate" : ISODate("2016-12-17T16:10:21.582Z"),
+							"realocate" : false,
+							"expired" : false,
+							"tags" : [
+									"viabilidade",
+									"estudo",
+									"física"
+							],
+							"historics" : null,
+							"activities" : [
+									{
+											"name" : "Montagem do circuito básico",
+											"description" : "Montar o circuito básico já trará grandes avanços nas evoluções da idéias.",
+											"startDate" : ISODate("2016-12-25T23:01:07.657Z"),
+											"endDate" : ISODate("2016-12-26T17:38:11.869Z"),
+											"dreamDate" : ISODate("2016-12-26T17:08:01.675Z"),
+											"realocate" : true,
+											"expired" : true,
+											"tags" : [ ],
+											"historics" : null,
+											"members" : [ ]
+									},
+									{
+											"name" : "Construção do protótipo",
+											"description" : "Confeccionar um modelo miniatura do veículo.",
+											"startDate" : ISODate("2016-12-20T23:52:53.902Z"),
+											"endDate" : ISODate("2016-12-21T09:21:03.652Z"),
+											"dreamDate" : ISODate("2016-12-21T08:29:10.964Z"),
+											"realocate" : true,
+											"expired" : true,
+											"tags" : [ ],
+											"historics" : null,
+											"members" : [ ]
+									}
+							]
+					}
+			]
+	}
+```
+>db.projects.find({}).forEach(function(project){ 
+	project.members.forEach(function(member){ 
+	   print("project: " + project._id + " -> member: " + member.user_id ); 
+   }); 
+}) 
+```
+project: 569d7ac25114717dd2af2aa2 -> member: 569cd0535114717dd2af2a93
+project: 569d7ac25114717dd2af2aa2 -> member: 569cd0535114717dd2af2a94
+project: 569d7ac25114717dd2af2aa2 -> member: 569cd0535114717dd2af2a95
+project: 569d7ac25114717dd2af2aa2 -> member: 569cd0535114717dd2af2a96
+project: 569d7ac25114717dd2af2aa2 -> member: 569cd0535114717dd2af2a97
+project: 569d7ac25114717dd2af2aa3 -> member: 569cd0535114717dd2af2a94
+project: 569d7ac25114717dd2af2aa3 -> member: 569cd0535114717dd2af2a95
+project: 569d7ac25114717dd2af2aa3 -> member: 569cd0535114717dd2af2a96
+project: 569d7ac25114717dd2af2aa3 -> member: 569cd0535114717dd2af2a97
+project: 569d7ac25114717dd2af2aa3 -> member: 569cd0535114717dd2af2a98
+project: 569d7ac25114717dd2af2aa4 -> member: 569cd0535114717dd2af2a95
+project: 569d7ac25114717dd2af2aa4 -> member: 569cd0535114717dd2af2a96
+project: 569d7ac25114717dd2af2aa4 -> member: 569cd0535114717dd2af2a97
+project: 569d7ac25114717dd2af2aa4 -> member: 569cd0535114717dd2af2a98
+project: 569d7ac25114717dd2af2aa4 -> member: 569cd0535114717dd2af2a99
+project: 569d7ac25114717dd2af2aa5 -> member: 569cd0535114717dd2af2a96
+project: 569d7ac25114717dd2af2aa5 -> member: 569cd0535114717dd2af2a97
+project: 569d7ac25114717dd2af2aa5 -> member: 569cd0535114717dd2af2a98
+project: 569d7ac25114717dd2af2aa5 -> member: 569cd0535114717dd2af2a99
+project: 569d7ac25114717dd2af2aa5 -> member: 569cd0535114717dd2af2a9a
+project: 569d7ac25114717dd2af2aa6 -> member: 569cd0535114717dd2af2a97
+project: 569d7ac25114717dd2af2aa6 -> member: 569cd0535114717dd2af2a98
+project: 569d7ac25114717dd2af2aa6 -> member: 569cd0535114717dd2af2a99
+project: 569d7ac25114717dd2af2aa6 -> member: 569cd0535114717dd2af2a9a
+project: 569d7ac25114717dd2af2aa6 -> member: 569cd0535114717dd2af2a9b
+```
+
+##Retrieve - busca
+### 1. Liste as informações dos membros de 1 projeto específico que deve ser buscado pelo seu nome de forma a não ligar para maiúsculas e minúsculas.
+
+> db.projects.find({name:/CArRO MOvido À Água/i},{members:1}).pretty()
+
+```
+{
+        "_id" : ObjectId("569d7ac25114717dd2af2aa2"),
         "members" : [
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a93"),
                         "type" : "idealizador",
-                        "notify" : true
+                        "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a94"),
                         "type" : "engenheiro",
-                        "notify" : false
+                        "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a95"),
@@ -555,129 +703,183 @@
                         "type" : "montador",
                         "notify" : false
                 }
-        ],
+        ]
+}
+```
+### 2. Liste todos os projetos com a tag que você escolheu para os 3 projetos em comum.
+> db.projects.find({tags:"inovação"},{name:1,tags:1}).pretty()
+```
+{
+        "_id" : ObjectId("569d7ac25114717dd2af2aa2"),
+        "name" : "Carro movido à água",
         "tags" : [
                 "tranporte",
                 "inovação",
                 "ciências"
-        ],
+        ]
+}
+{
+        "_id" : ObjectId("569d7ac25114717dd2af2aa3"),
+        "name" : "Viagem à Marte",
+        "tags" : [
+                "astronomia",
+                "inovação",
+                "física"
+        ]
+}
+{
+        "_id" : ObjectId("569d7ac25114717dd2af2aa5"),
+        "name" : "Dessalinização da Água do Mar",
+        "tags" : [
+                "água",
+                "sal",
+                "inovação"
+        ]
+}
+```
+### 3. Liste apenas os nomes de todas as atividades para todos os projetos.
+> db.projects.find({},{"goals.activities.name":1}).pretty()
+```
+{
+        "_id" : ObjectId("569d7ac25114717dd2af2aa2"),
         "goals" : [
                 {
-                        "name" : "Viabilização do Projeto",
-                        "description" : "Certificar cientificamente que o projeto é víável de acordo com os conhecimentos físicos e mecânicos existentes.",
-                        "startDate" : ISODate("2016-11-17T00:24:42.534Z"),
-                        "endDate" : ISODate("2016-12-02T17:42:52.961Z"),
-                        "dreamDate" : ISODate("2016-11-18T00:30:41.013Z"),
-                        "realocate" : true,
-                        "expired" : false,
-                        "tags" : [
-                                "viabilidade",
-                                "estudo",
-                                "física"
-                        ],
-                        "historics" : null,
                         "activities" : [
                                 {
-                                        "name" : "Montagem do circuito básico",
-                                        "description" : "Montar o circuito básico já trará grandes avanços nas evoluções da idéias.",
-                                        "startDate" : ISODate("2016-11-28T06:55:49.577Z"),
-                                        "endDate" : ISODate("2016-11-30T17:59:57.839Z"),
-                                        "dreamDate" : ISODate("2016-11-28T10:23:48.904Z"),
-                                        "realocate" : true,
-                                        "expired" : true,
-                                        "tags" : [ ],
-                                        "historics" : null,
-                                        "members" : [ ]
+                                        "name" : "Montagem do circuito básico"
                                 },
                                 {
-                                        "name" : "Construção do protótipo",
-                                        "description" : "Confeccionar um modelo miniatura do veículo.",
-                                        "startDate" : ISODate("2016-11-17T01:14:27.058Z"),
-                                        "endDate" : ISODate("2016-11-24T01:16:47.980Z"),
-                                        "dreamDate" : ISODate("2016-11-19T02:20:52.771Z"),
-                                        "realocate" : true,
-                                        "expired" : true,
-                                        "tags" : [ ],
-                                        "historics" : null,
-                                        "members" : [ ]
+                                        "name" : "Construção do protótipo"
                                 }
                         ]
                 }
         ]
-	}
+}
+{
+        "_id" : ObjectId("569d7ac25114717dd2af2aa3"),
+        "goals" : [
+                {
+                        "activities" : [
+                                {
+                                        "name" : "Arrecadação de fundos"
+                                },
+                                {
+                                        "name" : "Convencimento dos astronautas"
+                                }
+                        ]
+                }
+        ]
+}
+{
+        "_id" : ObjectId("569d7ac25114717dd2af2aa4"),
+        "goals" : [
+                {
+                        "activities" : [
+                                {
+                                        "name" : "Identificação em tempo real das queimadas"
+                                },
+                                {
+                                        "name" : "Montar grupos de ações territoriais"
+                                }
+                        ]
+                }
+        ]
+}
+{
+        "_id" : ObjectId("569d7ac25114717dd2af2aa5"),
+        "goals" : [
+                {
+                        "activities" : [
+                                {
+                                        "name" : "Investir em pesquisas para baratear o custo do processo"
+                                },
+                                {
+                                        "name" : "Definir processo de liberação dos dejetos do processo"
+                                }
+                        ]
+                }
+        ]
+}
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa6"), "goals" : [ { } ] }
 ```
->db.projects.find({}).forEach(function(project){ 
-	project.members.forEach(function(member){ 
-	   print("project: " + project._id + " -> member: " + member.user_id ); 
-   }); 
-}) 
+### 4. Liste todos os projetos que não possuam uma tag.
 ```
-project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a93
-project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a94
-project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a95
-project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a96
-project: 569cd21a5114717dd2af2a9d -> member: 569cd0535114717dd2af2a97
-project: 569cd21a5114717dd2af2a9e -> member: 569cd0535114717dd2af2a94
-project: 569cd21a5114717dd2af2a9e -> member: 569cd0535114717dd2af2a95
-project: 569cd21a5114717dd2af2a9e -> member: 569cd0535114717dd2af2a96
-project: 569cd21a5114717dd2af2a9e -> member: 569cd0535114717dd2af2a97
-project: 569cd21a5114717dd2af2a9e -> member: 569cd0535114717dd2af2a98
-project: 569cd21a5114717dd2af2a9f -> member: 569cd0535114717dd2af2a95
-project: 569cd21a5114717dd2af2a9f -> member: 569cd0535114717dd2af2a96
-project: 569cd21a5114717dd2af2a9f -> member: 569cd0535114717dd2af2a97
-project: 569cd21a5114717dd2af2a9f -> member: 569cd0535114717dd2af2a98
-project: 569cd21a5114717dd2af2a9f -> member: 569cd0535114717dd2af2a99
-project: 569cd21a5114717dd2af2aa0 -> member: 569cd0535114717dd2af2a96
-project: 569cd21a5114717dd2af2aa0 -> member: 569cd0535114717dd2af2a97
-project: 569cd21a5114717dd2af2aa0 -> member: 569cd0535114717dd2af2a98
-project: 569cd21a5114717dd2af2aa0 -> member: 569cd0535114717dd2af2a99
-project: 569cd21a5114717dd2af2aa0 -> member: 569cd0535114717dd2af2a9a
-project: 569cd21a5114717dd2af2aa1 -> member: 569cd0535114717dd2af2a97
-project: 569cd21a5114717dd2af2aa1 -> member: 569cd0535114717dd2af2a98
-project: 569cd21a5114717dd2af2aa1 -> member: 569cd0535114717dd2af2a99
-project: 569cd21a5114717dd2af2aa1 -> member: 569cd0535114717dd2af2a9a
-project: 569cd21a5114717dd2af2aa1 -> member: 569cd0535114717dd2af2a9b
+	A tag escolhida foi "polícia". A seguir, buscamos todos os projetos que não têm esse tag. Abaixo, todos que têm.
 ```
-
-##Retrieve - busca
-### 1. Liste as informações dos membros de 1 projeto específico que deve ser buscado pelo seu nome de forma a não ligar para maiúsculas e minúsculas.
-
-> db.projects.find({name:/CArRO MOvido À Água/i},{members:1}).pretty()
-
+> db.projects.find({tags:{$not:/polícia/}},{_id:1,name:1,tags:1}).pretty()
 ```
 {
-	"_id" : ObjectId("569cd21a5114717dd2af2a9d"),
-	"members" : [
-			{
-					"user_id" : ObjectId("569cd0535114717dd2af2a93"),
-					"type" : "idealizador",
-					"notify" : true
-			},
-			{
-					"user_id" : ObjectId("569cd0535114717dd2af2a94"),
-					"type" : "engenheiro",
-					"notify" : false
-			},
-			{
-					"user_id" : ObjectId("569cd0535114717dd2af2a95"),
-					"type" : "mecanico",
-					"notify" : false
-			},
-			{
-					"user_id" : ObjectId("569cd0535114717dd2af2a96"),
-					"type" : "eletricista",
-					"notify" : false
-			},
-			{
-					"user_id" : ObjectId("569cd0535114717dd2af2a97"),
-					"type" : "montador",
-					"notify" : false
-			}
-	]
+        "_id" : ObjectId("569d7ac25114717dd2af2aa2"),
+        "name" : "Carro movido à água",
+        "tags" : [
+                "tranporte",
+                "inovação",
+                "ciências"
+        ]
+}
+{
+        "_id" : ObjectId("569d7ac25114717dd2af2aa3"),
+        "name" : "Viagem à Marte",
+        "tags" : [
+                "astronomia",
+                "inovação",
+                "física"
+        ]
+}
+{
+        "_id" : ObjectId("569d7ac25114717dd2af2aa5"),
+        "name" : "Dessalinização da Água do Mar",
+        "tags" : [
+                "água",
+                "sal",
+                "inovação"
+        ]
 }
 ```
-### 2. Liste todos os projetos com a tag que você escolheu para os 3 projetos em comum.
-### 3. Liste apenas os nomes de todas as atividades para todos os projetos.
-### 4. Liste todos os projetos que não possuam uma tag.
+> db.projects.find({tags:/polícia/},{_id:1,name:1,tags:1}).pretty()
+```
+{
+        "_id" : ObjectId("569d7ac25114717dd2af2aa4"),
+        "name" : "Combate ao desmatamento na Amazônia",
+        "tags" : [
+                "polícia",
+                "clima",
+                "desmatamento"
+        ]
+}
+{
+        "_id" : ObjectId("569d7ac25114717dd2af2aa6"),
+        "name" : "Unidade de Polícia Pacificadora",
+        "tags" : [
+                "criminalidade",
+                "polícia",
+                "nacional"
+        ]
+}
+```
 ### 5. Liste todos os usuários que não fazem parte do primeiro projeto cadastrado.
+```
+	Primeiramente, é montado um array (vetUser1Proj) com os IDs dos membros do primeiro projeto 
+	( O primeiro projeto poderia ser buscado pelo nome, mas para exercitar sort, toArray, limit,etc...optou-se pela forma como está).
+	Depois, vai-se na coleção de usuários onde os IDs não estão dentre aqueles do array vetUser1Proj.
+```
+>var vetUser1Proj = [];
+> db.projects.find({},{_id:1,name:1,"members.user_id":1}).sort({_id:1}).limit(1).toArray()[0].members.forEach(function (member){vetUser1Proj.push(member.user_id)})
+> db.users.find({"_id":{$nin:vetUser1Proj}},{"_id":1,"name":1})
 
+> db.users.find({"_id":{$not:{$in:vetUser1Proj}}},{"_id":1,"name":1})  //Usuários que NÃO estão no primeiro projeto
+```
+{ "_id" : ObjectId("569cd0535114717dd2af2a98"), "name" : "Rodolfo Falante" }
+{ "_id" : ObjectId("569cd0535114717dd2af2a99"), "name" : "Frederico Almeida" }
+{ "_id" : ObjectId("569cd0535114717dd2af2a9a"), "name" : "Amanda Gentil" }
+{ "_id" : ObjectId("569cd0535114717dd2af2a9b"), "name" : "Patricia Aranha" }
+{ "_id" : ObjectId("569cd0535114717dd2af2a9c"), "name" : "Geovana Antonia" }
+```
+> db.users.find({"_id":{$in:vetUser1Proj}},{"_id":1,"name":1})  //Usuários que estão no primeiro projeto
+```
+{ "_id" : ObjectId("569cd0535114717dd2af2a93"), "name" : "Francisco Antunes" }
+{ "_id" : ObjectId("569cd0535114717dd2af2a94"), "name" : "Maiara Cordovil" }
+{ "_id" : ObjectId("569cd0535114717dd2af2a95"), "name" : "Alexandre Plastino" }
+{ "_id" : ObjectId("569cd0535114717dd2af2a96"), "name" : "Fernanda Albuquerque" }
+{ "_id" : ObjectId("569cd0535114717dd2af2a97"), "name" : "Elifarley Cruz" }
+```
