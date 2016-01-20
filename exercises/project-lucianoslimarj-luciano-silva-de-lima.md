@@ -863,11 +863,10 @@ project: 569d7ac25114717dd2af2aa6 -> member: 569cd0535114717dd2af2a9b
 	( O primeiro projeto poderia ser buscado pelo nome, mas para exercitar sort, toArray, limit,etc...optou-se pela forma como está).
 	Depois, vai-se na coleção de usuários onde os IDs não estão dentre aqueles do array vetUser1Proj.
 ```
->var vetUser1Proj = [];
+> var vetUser1Proj = [];
 > db.projects.find({},{_id:1,name:1,"members.user_id":1}).sort({_id:1}).limit(1).toArray()[0].members.forEach(function (member){vetUser1Proj.push(member.user_id)})
-> db.users.find({"_id":{$nin:vetUser1Proj}},{"_id":1,"name":1})
 
-> db.users.find({"_id":{$not:{$in:vetUser1Proj}}},{"_id":1,"name":1})  //Usuários que NÃO estão no primeiro projeto
+> db.users.find({"_id":{$nin:vetUser1Proj}},{"_id":1,"name":1})  //Usuários que NÃO estão no primeiro projeto
 ```
 { "_id" : ObjectId("569cd0535114717dd2af2a98"), "name" : "Rodolfo Falante" }
 { "_id" : ObjectId("569cd0535114717dd2af2a99"), "name" : "Frederico Almeida" }
