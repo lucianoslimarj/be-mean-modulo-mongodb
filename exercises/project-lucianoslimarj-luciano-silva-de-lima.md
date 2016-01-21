@@ -915,6 +915,9 @@ WriteResult({ "nMatched" : 5, "nUpserted" : 0, "nModified" : 5 })
 > for(var x=0;x<vetProjIDs.length;x++) {
 	db.projects.update({_id:vetProjIDs[x]._id},{$push: { tags: 'project#'+(x+1) }})
 }
+```
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+```
 > db.projects.find({},{tags:1})
 ```
 { "_id" : ObjectId("569d7ac25114717dd2af2aa2"), "tags" : [ "tranporte", "inovação", "ciências", "project#1" ] }
