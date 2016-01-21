@@ -887,11 +887,41 @@ project: 569d7ac25114717dd2af2aa6 -> member: 569cd0535114717dd2af2a9b
 ```
 
 ##Update - alteração
+
 ### 1. Adicione para todos os projetos o campo views: 0.
+> db.projects.update({},{$set:{views:0}},{multi:true})
 ```
+WriteResult({ "nMatched" : 5, "nUpserted" : 0, "nModified" : 5 })
+```
+> db.projects.find({},{views:1}).pretty()
+```
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa2"), "views" : 0 }
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa3"), "views" : 0 }
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa4"), "views" : 0 }
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa5"), "views" : 0 }
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa6"), "views" : 0 }
 ```
 ### 2. Adicione 1 tag diferente para cada projeto.
+
+> db.projects.find({},{tags:1})
 ```
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa2"), "tags" : [ "tranporte", "inovação", "ciências" ] }
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa3"), "tags" : [ "astronomia", "inovação", "física" ] }
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa4"), "tags" : [ "polícia", "clima", "desmatamento" ] }
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa5"), "tags" : [ "água", "sal", "inovação" ] }
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa6"), "tags" : [ "criminalidade", "polícia", "nacional" ] }
+```
+> var vetProjIDs = db.projects.find({},{_id:1}).toArray();
+> for(var x=0;x<vetProjIDs.length;x++) {
+	db.projects.update({_id:vetProjIDs[x]._id},{$push: { tags: 'project#'+(x+1) }})
+}
+> db.projects.find({},{tags:1})
+```
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa2"), "tags" : [ "tranporte", "inovação", "ciências", "project#1" ] }
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa3"), "tags" : [ "astronomia", "inovação", "física", "project#2" ] }
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa4"), "tags" : [ "polícia", "clima", "desmatamento", "project#3" ] }
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa5"), "tags" : [ "água", "sal", "inovação", "project#4" ] }
+{ "_id" : ObjectId("569d7ac25114717dd2af2aa6"), "tags" : [ "criminalidade", "polícia", "nacional", "project#5" ] }
 ```
 ### 3. Adicione 2 membros diferentes para cada projeto.
 ```
