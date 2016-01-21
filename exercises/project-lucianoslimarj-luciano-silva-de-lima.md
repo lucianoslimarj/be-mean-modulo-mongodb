@@ -87,7 +87,8 @@
 					user_id: objectId,
 					type: String,
 					notify: Boolean
-				}]
+				}],
+				comments:[activity-comments_id]
 			}]
 		}]
 	}
@@ -96,14 +97,15 @@
 ```	
 	A coleção candidata a não ser um documento embutido na coleção de projetos é a coleção de 'comments'. Dois motivos me fizeram a esta escolha:
 	
-			1. A quantidade de comentários em uma atividade é algo difícil de ser mensurado antecipadamente, o que pode levar a coleção crescer além da
-				"folga" determinada. Isso levaria a um cenário de realocações de documentos e posterior fragmentação da coleção.
-			2. Em cenários bastante específico é que o usuario final deseja ver os comentários. Não faz sentido sempre que buscar uma atividade já trazer todos
-				os seus comentários.Inclusive, essa busca pode ( e deve ) ser feito com buscas parciais ( usando limit e skip ).
+			1. Crescimento do Documento: A quantidade de comentários em uma atividade é algo difícil de ser mensurado antecipadamente, o que pode levar a coleção crescer além da
+				"folga" determinada. Isso levaria a um cenário de realocações ( usando MMAPv1 ) de documentos e posterior fragmentação da coleção.
+			2. Uso dos Dados e Performance: Em cenários bastante específico é que o usuario final deseja ver os comentários de uma atividade. Na maioria dos cenários que envolvam  busca de uma atividade, os comentários 
+			   não são necessários naquele instante. A busca pode ser feito por demanda do usuário e de forma parcial ( usando limit e skip ).
+			3. Atomicidade na atualização dos Dados: Em cenários comuns, a criação ou atualização de comentários é bem isolada da manutenção dos dados do Projeto.
+			   Com isso, não estaremos comprometendo a atomicidade de escrita dos dados.
 		
 	activity-comments: [{
-	    activity_id: objectId
-		text: String,
+	    text: String,
 		createDate: Date,
 		members : [{
 			user_id: objectId,
@@ -506,6 +508,7 @@
 					activity.tags =  [];
 					activity.historics = null;	
 					activity.members = [];
+					activity.comments = [];
 				});
 			}
 		});
@@ -882,3 +885,46 @@ project: 569d7ac25114717dd2af2aa6 -> member: 569cd0535114717dd2af2a9b
 { "_id" : ObjectId("569cd0535114717dd2af2a96"), "name" : "Fernanda Albuquerque" }
 { "_id" : ObjectId("569cd0535114717dd2af2a97"), "name" : "Elifarley Cruz" }
 ```
+
+##Update - alteração
+### 1. Adicione para todos os projetos o campo views: 0.
+```
+```
+### 2. Adicione 1 tag diferente para cada projeto.
+```
+```
+### 3. Adicione 2 membros diferentes para cada projeto.
+```
+```
+### 4. Adicione 1 comentário em cada atividade, deixe apenas 1 projeto sem.
+```
+```
+### 5. Adicione 1 projeto inteiro com UPSERT.
+```
+```
+
+
+
+--Labs
+
+var vetElements = [];
+db.projects.find({},{"goals.activities":1}).toArray().forEach(function(project){
+    var vetGoals =  project.goals;
+	if (vetGoals) {
+		for(var k=0;k<vetGoals.length;k++) {
+			var vetActivities = vetGoals[k].activities;
+			if (vetActivities) { 
+				for ( var x=0;x<vetActivities.length;x++) {
+				   vetElements.push({"project":project._id, "activity": "goals." + k + ".activities." + x + ".comments"})
+				}
+			}
+		}
+	}
+})
+
+vetElements.forEach(function(element){
+ var objStr = '{"' + element.activity + '":[]}';
+ //var Obj = JSON.parse(objStr);
+//printjson(Obj);
+ db.projects.update({"_id": element.project},{$set:JSON.parse(objStr)});
+})
