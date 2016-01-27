@@ -1527,6 +1527,7 @@ WriteResult({
 ```
 
 ##Delete - remoção
+
 ### 1. Apague todos os projetos que não possuam tags.
 Command
 ```
