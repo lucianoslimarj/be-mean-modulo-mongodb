@@ -1530,13 +1530,13 @@ WriteResult({
 
 ### 1. Apague todos os projetos que não possuam tags.
 ```
-	Projetos que não tem tags são os projetos que atendem a uma das condições:
-		1. Não possuam a campo 'tags';
-		2. Possuam o campo 'tags' e cujo valor é null;
-		3. Possuam o campo 'tags' e o valor é um array vazio ([]).
-	As condições 1. e 2., são atendidas por 'tags : null'.
-	A condição 3. é atendida por 'tags: {$size:0}'.
-	Vamos juntar essas duas operações por um 'Or'.
+Projetos que não tem tags são os projetos que atendem a uma das condições:
+	1. Não possuam a campo 'tags';
+	2. Possuam o campo 'tags' e cujo valor é null;
+	3. Possuam o campo 'tags' e o valor é um array vazio ([]).
+As condições 1. e 2., são atendidas por 'tags : null'.
+A condição 3. é atendida por 'tags: {$size:0}'.
+Vamos juntar essas duas operações por um 'Or'.
 ```
 > db.projects.count()
 ```
@@ -1551,9 +1551,106 @@ WriteResult({ "nRemoved" : 0 })
 6
 ```
 ### 2. Apague todos os projetos que não possuam comentários nas atividades.
-Command
+//Verificando como estão os comentários das atividades:
+> db.activities.find({},{comments:1}).pretty()
 ```
-Result
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad1"),
+        "comments" : [
+                {
+                        "text" : "comentários para Montagem do circuito básico",
+                        "createDate" : ISODate("2016-01-26T21:43:41.265Z"),
+                        "members" : [ ],
+                        "files" : [ ]
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad2"),
+        "comments" : [
+                {
+                        "text" : "comentários para Construção do protótipo",
+                        "createDate" : ISODate("2016-01-26T21:43:41.274Z"),
+                        "members" : [ ],
+                        "files" : [ ]
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad4"),
+        "comments" : [
+                {
+                        "text" : "comentários para Arrecadação de fundos",
+                        "createDate" : ISODate("2016-01-26T21:43:41.277Z"),
+                        "members" : [ ],
+                        "files" : [ ]
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad5"),
+        "comments" : [
+                {
+                        "text" : "comentários para Convencimento dos astronautas",
+                        "createDate" : ISODate("2016-01-26T21:43:41.279Z"),
+                        "members" : [ ],
+                        "files" : [ ]
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad7"),
+        "comments" : [
+                {
+                        "text" : "comentários para Identificação em tempo real das queimadas",
+                        "createDate" : ISODate("2016-01-26T21:43:41.281Z"),
+                        "members" : [ ],
+                        "files" : [ ]
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad8"),
+        "comments" : [
+                {
+                        "text" : "comentários para Montar grupos de ações territoriais",
+                        "createDate" : ISODate("2016-01-26T21:43:41.283Z"),
+                        "members" : [ ],
+                        "files" : [ ]
+                }
+        ]
+}
+{ "_id" : ObjectId("56a7b6005114717dd2af2ada"), "comments" : [ ] }
+{ "_id" : ObjectId("56a7b6005114717dd2af2adb"), "comments" : [ ] }
+```
+
+```
+//Montando um array com os IDs de atividades que tem o campo "comments" e está vazio.
+```
+var actArr =  db.activities.find({comments:{$size:0}},{_id:1}).map(function(elem){return elem._id});
+actArr
+```
+[
+        ObjectId("56a7b6005114717dd2af2ada"),
+        ObjectId("56a7b6005114717dd2af2adb")
+]
+```
+
+```
+// Montando um array com todos os projetos que tem uma goal que tem uma das atividades no array actArr.
+```
+var projArr = db.projects.distinct("_id",{"goals.activities.activity_id":{$in:actArr}})
+projArr
+```
+[ ObjectId("56a7b6005114717dd2af2adc") ]
+```
+
+```
+// Excluído o projeto ( ObjectId("56a7b6005114717dd2af2adc") ) que está no array projArr
+```
+> db.projects.remove({_id:{$in:projArr}})
+```
+WriteResult({ "nRemoved" : 1 })
 ```
 ### 3. Apague todos os projetos que não possuam atividades.
 Command
