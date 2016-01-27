@@ -1529,9 +1529,26 @@ WriteResult({
 ##Delete - remoção
 
 ### 1. Apague todos os projetos que não possuam tags.
-Command
 ```
-Result
+	Projetos que não tem tags são os projetos que atendem a uma das condições:
+		1. Não possuam a campo 'tags';
+		2. Possuam o campo 'tags' e cujo valor é null;
+		3. Possuam o campo 'tags' e o valor é um array vazio ([]).
+	As condições 1. e 2., são atendidas por 'tags : null'.
+	A condição 3. é atendida por 'tags: {$size:0}'.
+	Vamos juntar essas duas operações por um 'Or'.
+```
+> db.projects.count()
+```
+6
+```
+>  db.projects.remove( {$or:[ {tags:null},{tags:{$size:0}} ]} )
+```
+WriteResult({ "nRemoved" : 0 })
+```
+> db.projects.count()
+```
+6
 ```
 ### 2. Apague todos os projetos que não possuam comentários nas atividades.
 Command
