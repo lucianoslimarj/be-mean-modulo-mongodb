@@ -1656,3 +1656,19 @@ projArr
 ```
 WriteResult({ "nRemoved" : 1 })
 ```
+### 3. Apague todos os projetos que não possuam atividades.
+Command
+```
+Result
+```
+### 4. Escolha 2 usuário e apague todos os projetos em que os 2 fazem parte.
+Command
+```
+Result
+```
+### 5. Apague todos os projetos que possuam uma determinada tag em goal.
+Command
+```
+Result
+```
+
