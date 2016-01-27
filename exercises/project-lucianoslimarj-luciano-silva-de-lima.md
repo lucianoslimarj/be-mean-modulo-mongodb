@@ -1550,7 +1550,9 @@ WriteResult({ "nRemoved" : 0 })
 ```
 6
 ```
+
 ### 2. Apague todos os projetos que não possuam comentários nas atividades.
+
 ```
 //Verificando como estão os comentários das atividades:
 ```
