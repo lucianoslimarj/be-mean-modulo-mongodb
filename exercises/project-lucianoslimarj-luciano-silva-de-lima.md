@@ -1652,7 +1652,7 @@ projArr
 ```
 // Excluído o projeto ( ObjectId("56a7b6005114717dd2af2adc") ) que está no array projArr.
 ```
-> db.projects.remove({_id:{$in:projArr}})
+>db.projects.remove({_id:{$in:projArr}})
 ```
 WriteResult({ "nRemoved" : 1 })
 ```
@@ -1671,4 +1671,3 @@ Result
 ```
 Result
 ```
-
