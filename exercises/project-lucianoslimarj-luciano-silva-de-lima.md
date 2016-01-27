@@ -1656,14 +1656,99 @@ projArr
 ```
 WriteResult({ "nRemoved" : 1 })
 ```
+
 ### 3. Apague todos os projetos que não possuam atividades.
 ```
-Result
+//Verificando as goals e ativitidades de cada projeto.
 ```
+> db.projects.find({},{"goals.activities":1}).pretty()
+```
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad3"),
+        "goals" : [
+                {
+                        "activities" : [
+                                {
+                                        "activity_id" : ObjectId("56a7b6005114717dd2af2ad1"),
+                                        "name" : "Montagem do circuito básico"
+                                },
+                                {
+                                        "activity_id" : ObjectId("56a7b6005114717dd2af2ad2"),
+                                        "name" : "Construção do protótipo"
+                                }
+                        ]
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad6"),
+        "goals" : [
+                {
+                        "activities" : [
+                                {
+                                        "activity_id" : ObjectId("56a7b6005114717dd2af2ad4"),
+                                        "name" : "Arrecadação de fundos"
+                                },
+                                {
+                                        "activity_id" : ObjectId("56a7b6005114717dd2af2ad5"),
+                                        "name" : "Convencimento dos astronautas"
+                                }
+                        ]
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad9"),
+        "goals" : [
+                {
+                        "activities" : [
+                                {
+                                        "activity_id" : ObjectId("56a7b6005114717dd2af2ad7"),
+                                        "name" : "Identificação em tempo real das queimadas"
+                                },
+                                {
+                                        "activity_id" : ObjectId("56a7b6005114717dd2af2ad8"),
+                                        "name" : "Montar grupos de ações territoriais"
+                                }
+                        ]
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2add"),
+        "goals" : [
+                {
+                        "activities" : [ ]
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a8ebc81e528b675120c07d"),
+        "goals" : [
+                {
+                        "activities" : [ ]
+                }
+        ]
+}
+```
+
+```
+// Um projeto sem atividade é quando uma alternativas é verdadeira:
+1. Não tem o campo "goals", ou ele é null;
+2. Não tem tem o campo "goals.activities", ou ele é null;
+3. O campo "goals.activities" tem um array vazio
+```
+> db.projects.remove({$or:[{"goals":null},{"goals.activities":null},{"goals.activities":{$size:10}}]})
+
+```
+WriteResult({ "nRemoved" : 2 })
+```
+
 ### 4. Escolha 2 usuário e apague todos os projetos em que os 2 fazem parte.
 ```
 Result
 ```
+
 ### 5. Apague todos os projetos que possuam uma determinada tag em goal.
 ```
 Result
