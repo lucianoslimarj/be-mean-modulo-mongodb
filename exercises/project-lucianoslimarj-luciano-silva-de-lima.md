@@ -631,13 +631,12 @@
         ]
 }
 ```
->db.projects.find({}).sort({_id:1}).forEach(function(project){ 
+> db.projects.find({}).sort({_id:1}).forEach(function(project){ 
 	project.members.forEach(function(member){ 
 	   print("project: " + project._id + " -> member: " + member.user_id ); 
    }); 
 }) 
 ```
-
 project: 56a7b6005114717dd2af2ad3 -> member: 569cd0535114717dd2af2a93
 project: 56a7b6005114717dd2af2ad3 -> member: 569cd0535114717dd2af2a94
 project: 56a7b6005114717dd2af2ad3 -> member: 569cd0535114717dd2af2a95
@@ -664,7 +663,6 @@ project: 56a7b6005114717dd2af2add -> member: 569cd0535114717dd2af2a99
 project: 56a7b6005114717dd2af2add -> member: 569cd0535114717dd2af2a9a
 project: 56a7b6005114717dd2af2add -> member: 569cd0535114717dd2af2a9b
 ```
-
 ##Retrieve - busca
 ### 1. Liste as informações dos membros de 1 projeto específico que deve ser buscado pelo seu nome de forma a não ligar para maiúsculas e minúsculas.
 
