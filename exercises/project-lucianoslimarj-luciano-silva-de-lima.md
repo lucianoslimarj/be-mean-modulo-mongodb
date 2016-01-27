@@ -936,8 +936,10 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 { "_id" : ObjectId("56a7b6005114717dd2af2add"), "tags" : [ "criminalidade", "polícia", "nacional", "project#5" ] }
 ```
 ### 3. Adicione 2 membros diferentes para cada projeto.
+```
 //Retorna 2 IDs de usuários válidos a partir de indice, considerando os 5 consecutivos já incluídos
 //usu_array é uma array com todos os objectIDs da coleção de users.
+```
 function getUserIDs ( fromIndex, skip, size ) {
 	var ret = [];
 	for( var x=0;x<usu_array.length && ret.length<size;x++) {
@@ -1317,13 +1319,14 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 }
 ```
 ### 4. Adicione 1 comentário em cada atividade, deixe apenas 1 projeto sem.
+```
 Ordena-se a coleção de Projects, exibindo o array de activities de goals
  db.projects.find({},{_id:1,"goals.activities":1}).sort({_id:1})
 Ao total, são 5 projetos, o ultimo tem uma goal e que ja não tem atividades. Assim, limitarei aos 3 primeiros através limit(3).
 Em seguida, chama-se uma função map(...) para eliminar alguma hierarquia no documento retorna
 Varre-se essa estrutura e pegando o ID ( refs ) das atividades ( que originalmente estao em goals)
 Por último, insere um comentário em cada em cada atividades selecionada.
-
+```
 > db.projects.find({},{_id:1,"goals.activities":1}).sort({_id:1}).limit(3).map(function(elem){return elem.goals}).forEach(function(act){
     for ( var x=0;x<act.length;x++) {
 		if (act[x].activities) { 
@@ -1522,7 +1525,34 @@ WriteResult({
 	]
 }
 ```
- 
+##Delete - remoção
+
+### 1. Apague todos os projetos que não possuam tags.
+Command
+```
+Result
+```
+### 2. Apague todos os projetos que não possuam comentários nas atividades.
+Command
+```
+Result
+```
+### 3. Apague todos os projetos que não possuam atividades.
+Command
+```
+Result
+```
+### 4. Escolha 2 usuário e apague todos os projetos em que os 2 fazem parte.
+Command
+```
+Result
+```
+### 5. Apague todos os projetos que possuam uma determinada tag em goal.
+Command
+```
+Result
+```
+
 --Labs
 
 var vetElements = [];
