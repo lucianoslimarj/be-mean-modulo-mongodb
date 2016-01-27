@@ -1538,15 +1538,15 @@ As condições 1. e 2., são atendidas por 'tags : null'.
 A condição 3. é atendida por 'tags: {$size:0}'.
 Vamos juntar essas duas operações por um 'Or'.
 ```
-> db.projects.count()
+>db.projects.count()
 ```
 6
 ```
->  db.projects.remove( {$or:[ {tags:null},{tags:{$size:0}} ]} )
+>db.projects.remove( {$or:[ {tags:null},{tags:{$size:0}} ]} )
 ```
 WriteResult({ "nRemoved" : 0 })
 ```
-> db.projects.count()
+>db.projects.count()
 ```
 6
 ```
