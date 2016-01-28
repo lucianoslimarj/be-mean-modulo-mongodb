@@ -512,7 +512,7 @@
 					activity.members = [];
 					activity.comments = [];
 					//Adiciona a atividade
-					db.activities.insert(activity);
+					db.activities1.insert(activity);
 					goal.activities.push({'activity_id':id, 'name': activity.name});
 				});
 				//Remove a propriedade "pre_activities" do objeto goal.
@@ -520,7 +520,7 @@
 			}
 		});
 		//Adiciona o projeto
-		db.projects.insert(project);	
+		db.projects1.insert(project);	
 	}
 ```	
 > db.projects.createIndex({tags:1})
@@ -1746,9 +1746,273 @@ WriteResult({ "nRemoved" : 2 })
 
 ### 4. Escolha 2 usuário e apague todos os projetos em que os 2 fazem parte.
 ```
-Result
+Vamos analisar como são os membros cadastrados para os projetos remanescentes.
+```
+> db.projects.find({},{"name":1, "members.user_id":1}).pretty()
+```
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad3"),
+        "name" : "Carro movido à água",
+        "members" : [
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a93")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a94")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a95")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a96")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a97")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a98")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a99")
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad6"),
+        "name" : "Viagem à Marte",
+        "members" : [
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a94")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a95")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a96")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a97")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a98")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a93")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a99")
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad9"),
+        "name" : "Combate ao desmatamento na Amazônia",
+        "members" : [
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a95")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a96")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a97")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a98")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a99")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a93")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a94")
+                }
+        ]
+}
 ```
 
+```
+Percebemos que, devido aos exercícios antes, os 03 projetos possuem os mesmos usuarios como membros. Assim, vamos trocar um membro do 1o e 3o projetos.
+Buscando os usuarios associados aos projetos:
+```
+> var vetUsedUsersID =  db.projects.distinct("members.user_id");
+> vetUsedUsersID
+```
+[
+        ObjectId("569cd0535114717dd2af2a93"),
+        ObjectId("569cd0535114717dd2af2a94"),
+        ObjectId("569cd0535114717dd2af2a95"),
+        ObjectId("569cd0535114717dd2af2a96"),
+        ObjectId("569cd0535114717dd2af2a97"),
+        ObjectId("569cd0535114717dd2af2a98"),
+        ObjectId("569cd0535114717dd2af2a99")
+]
+```
+
+```
+Buscando os usuários que não estão associados a nenhum projeto:
+```
+> db.users.distinct("_id",{"_id":{$nin:vetUsedUsersID}})
+```
+[
+        ObjectId("569cd0535114717dd2af2a9a"),
+        ObjectId("569cd0535114717dd2af2a9b"),
+        ObjectId("569cd0535114717dd2af2a9c")
+]
+```
+
+```
+Trocando os primeiros membros do 1o e do 3o para ObjectId("569cd0535114717dd2af2a9a") e ObjectId("569cd0535114717dd2af2a9b"), respectivamente.
+```
+> db.projects.update( {name: /Carro movido à água/i, "members.user_id": ObjectId("569cd0535114717dd2af2a93") }, {$set:{"members.$.user_id":ObjectId("569cd0535114717dd2af2a9a") }} )
+```
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+```
+> db.projects.update( {name: /Combate ao desmatamento na Amazônia/i, "members.user_id": ObjectId("569cd0535114717dd2af2a95") }, {$set:{"members.$.user_id":ObjectId("569cd0535114717dd2af2a9b") }} )
+```
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+```
+
+```
+Reanalisando os membros cadastrados para os projetos remanescentes.
+```
+> db.projects.find({},{"name":1, "members.user_id":1}).pretty()
+```
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad3"),
+        "name" : "Carro movido à água",
+        "members" : [
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a9a")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a94")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a95")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a96")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a97")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a98")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a99")
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad6"),
+        "name" : "Viagem à Marte",
+        "members" : [
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a94")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a95")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a96")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a97")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a98")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a93")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a99")
+                }
+        ]
+}
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad9"),
+        "name" : "Combate ao desmatamento na Amazônia",
+        "members" : [
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a9b")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a96")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a97")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a98")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a99")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a93")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a94")
+                }
+        ]
+}
+```
+
+```
+Agora, vamos apagar todos os projetos em que temos a "amandagentil" ( "_id" : ObjectId("569cd0535114717dd2af2a9a") ) ou 
+a "patriciaaranha" ( "_id" : ObjectId("569cd0535114717dd2af2a9b") ), como um dos seus membros.
+```
+> var vetDelUserIDs = db.users.distinct("_id",{"auth.username":{$in:['amandagentil','patriciaaranha']}})
+> vetDelUserIDs
+```
+[
+        ObjectId("569cd0535114717dd2af2a9a"),
+        ObjectId("569cd0535114717dd2af2a9b")
+]
+```
+> db.projects.remove({"members.user_id":{$in:vetDelUserIDs}})
+```
+WriteResult({ "nRemoved" : 2 })
+```
+
+```
+Reanalisando os membros dos projetos remanescentes.
+```
+> db.projects.find({},{"name":1, "members.user_id":1}).pretty()
+```
+{
+        "_id" : ObjectId("56a7b6005114717dd2af2ad6"),
+        "name" : "Viagem à Marte",
+        "members" : [
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a94")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a95")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a96")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a97")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a98")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a93")
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a99")
+                }
+        ]
+}
+```
 ### 5. Apague todos os projetos que possuam uma determinada tag em goal.
 ```
 Result
