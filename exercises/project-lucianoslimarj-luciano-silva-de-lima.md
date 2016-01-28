@@ -1661,7 +1661,7 @@ WriteResult({ "nRemoved" : 1 })
 ```
 //Verificando as goals e ativitidades de cada projeto.
 ```
-> db.projects.find({},{"goals.activities":1}).pretty()
+> db.projects.find({},{"goals.activities":1}).pretty();
 ```
 {
         "_id" : ObjectId("56a7b6005114717dd2af2ad3"),
@@ -1746,9 +1746,9 @@ WriteResult({ "nRemoved" : 2 })
 
 ### 4. Escolha 2 usuário e apague todos os projetos em que os 2 fazem parte.
 ```
-Vamos analisar como são os membros cadastrados para os projetos remanescentes.
+Vamos analisar como estão os membros cadastrados para os projetos remanescentes.
 ```
-> db.projects.find({},{"name":1, "members.user_id":1}).pretty()
+> db.projects.find({},{"name":1, "members.user_id":1}).pretty();
 ```
 {
         "_id" : ObjectId("56a7b6005114717dd2af2ad3"),
@@ -1834,11 +1834,11 @@ Vamos analisar como são os membros cadastrados para os projetos remanescentes.
 ```
 
 ```
-Percebemos que, devido aos exercícios antes, os 03 projetos possuem os mesmos usuarios como membros. Assim, vamos trocar um membro do 1o e 3o projetos.
+Percebemos que, devido aos exercícios anteriores, os 03 projetos possuem os mesmos usuarios como membros. Assim, vamos trocar um membro do 1o e 3o projetos.
 Buscando os usuarios associados aos projetos:
 ```
 > var vetUsedUsersID =  db.projects.distinct("members.user_id");
-> vetUsedUsersID
+> vetUsedUsersID;
 ```
 [
         ObjectId("569cd0535114717dd2af2a93"),
@@ -1854,7 +1854,7 @@ Buscando os usuarios associados aos projetos:
 ```
 Buscando os usuários que não estão associados a nenhum projeto:
 ```
-> db.users.distinct("_id",{"_id":{$nin:vetUsedUsersID}})
+> db.users.distinct("_id",{"_id":{$nin:vetUsedUsersID}});
 ```
 [
         ObjectId("569cd0535114717dd2af2a9a"),
@@ -1866,11 +1866,11 @@ Buscando os usuários que não estão associados a nenhum projeto:
 ```
 Trocando os primeiros membros do 1o e do 3o para ObjectId("569cd0535114717dd2af2a9a") e ObjectId("569cd0535114717dd2af2a9b"), respectivamente.
 ```
-> db.projects.update( {name: /Carro movido à água/i, "members.user_id": ObjectId("569cd0535114717dd2af2a93") }, {$set:{"members.$.user_id":ObjectId("569cd0535114717dd2af2a9a") }} )
+> db.projects.update( {name: /Carro movido à água/i, "members.user_id": ObjectId("569cd0535114717dd2af2a93") }, {$set:{"members.$.user_id":ObjectId("569cd0535114717dd2af2a9a") }} );
 ```
 WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 ```
-> db.projects.update( {name: /Combate ao desmatamento na Amazônia/i, "members.user_id": ObjectId("569cd0535114717dd2af2a95") }, {$set:{"members.$.user_id":ObjectId("569cd0535114717dd2af2a9b") }} )
+> db.projects.update( {name: /Combate ao desmatamento na Amazônia/i, "members.user_id": ObjectId("569cd0535114717dd2af2a95") }, {$set:{"members.$.user_id":ObjectId("569cd0535114717dd2af2a9b") }} );
 ```
 WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 ```
@@ -1878,7 +1878,7 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 ```
 Reanalisando os membros cadastrados para os projetos remanescentes.
 ```
-> db.projects.find({},{"name":1, "members.user_id":1}).pretty()
+> db.projects.find({},{"name":1, "members.user_id":1}).pretty();
 ```
 {
         "_id" : ObjectId("56a7b6005114717dd2af2ad3"),
@@ -1967,15 +1967,15 @@ Reanalisando os membros cadastrados para os projetos remanescentes.
 Agora, vamos apagar todos os projetos em que temos a "amandagentil" ( "_id" : ObjectId("569cd0535114717dd2af2a9a") ) ou 
 a "patriciaaranha" ( "_id" : ObjectId("569cd0535114717dd2af2a9b") ), como um dos seus membros.
 ```
-> var vetDelUserIDs = db.users.distinct("_id",{"auth.username":{$in:['amandagentil','patriciaaranha']}})
-> vetDelUserIDs
+> var vetDelUserIDs = db.users.distinct("_id",{"auth.username":{$in:['amandagentil','patriciaaranha']}});
+> vetDelUserIDs;
 ```
 [
         ObjectId("569cd0535114717dd2af2a9a"),
         ObjectId("569cd0535114717dd2af2a9b")
 ]
 ```
-> db.projects.remove({"members.user_id":{$in:vetDelUserIDs}})
+> db.projects.remove({"members.user_id":{$in:vetDelUserIDs}});
 ```
 WriteResult({ "nRemoved" : 2 })
 ```
@@ -1983,7 +1983,7 @@ WriteResult({ "nRemoved" : 2 })
 ```
 Reanalisando os membros dos projetos remanescentes.
 ```
-> db.projects.find({},{"name":1, "members.user_id":1}).pretty()
+> db.projects.find({},{"name":1, "members.user_id":1}).pretty();
 ```
 {
         "_id" : ObjectId("56a7b6005114717dd2af2ad6"),
@@ -2015,5 +2015,44 @@ Reanalisando os membros dos projetos remanescentes.
 ```
 ### 5. Apague todos os projetos que possuam uma determinada tag em goal.
 ```
-Result
+Verificando as tags de goals dos projetos.
+```
+> db.projects.find({},{"goals.tags":1}).pretty()
+```
+{
+	"_id" : ObjectId("56a7b6005114717dd2af2ad6"),
+	"goals" : [
+			{
+					"tags" : [
+							"conquista",
+							"estudo",
+							"solo"
+					]
+			}
+	]
+}
+```
+
+```
+Tentativa de remover projetos a partir de tag de goals que não existe.
+```
+> db.projects.remove({"goals.tags":"xxx"})
+```
+WriteResult({ "nRemoved" : 0 })
+```
+
+```
+Remover todos os projetos com a tag "estudo".
+```
+> db.projects.remove({"goals.tags":"estudo"})
+```
+WriteResult({ "nRemoved" : 1 })
+```
+
+```
+Contabilizando o total de documentos na coleção 'projects'
+```
+> db.projects.count()
+```
+0
 ```
