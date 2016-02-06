@@ -2080,8 +2080,7 @@ switched to db be-mean-final
 { "ok" : 1 }
 ```
 ### 3. Adicionar o papel grantRolesToUser e revokeRole para o usuário com Escrita e Leitura.
-ação grantRole 
-Acredito que este item não esteja bem formulado pois *grantRolesToUser* é um comando e *revokeRole* é uma ação.
+Acredito que este item não esteja bem formulado pois `grantRolesToUser` é um comando e *revokeRole* é uma ação.
 Com isso, vou entender que a intenção seja possibilitar que o referido usuário seja capaz de conceder e revogar papéis ( apenas ) de outros usuários apenas
 dentro do banco de dados do projeto final ( be-mean-final). Analisando o papel nativo 'userAdmin' do mongoDB, vejo que esse paepel dá outros privilégios ( por exemplo: criar novas roles ) e que, neste caso, é um privilégio indesejado. Assim, decidi criar 02 roles específicas (projectGrantRole e projectRevokeRole), dentro do banco be-mean-final, uma com a ação 'grantRole' e outra com a ação 'revokeRole'. Após isso, essas roles serão concedidas ao referido usuário.
 
