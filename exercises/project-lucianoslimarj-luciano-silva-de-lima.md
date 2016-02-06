@@ -2056,3 +2056,166 @@ Contabilizando o total de documentos na coleção 'projects'
 ```
 0
 ```
+
+##Gerenciamento de usuários
+
+### 1. Crie um usuário com permissões APENAS de Leitura.
+> use be-mean-final
+```
+switched to db be-mean-final
+```
+> db.runCommand({createUser: 'projr',
+				pwd: 'r123',
+				roles:['read']
+			  })
+```
+{ "ok" : 1 }
+```
+### 2. Crie um usuário com permissões de Escrita e Leitura.
+> db.runCommand({createUser: 'projrw',
+				pwd: 'rw123',
+				roles:['readWrite']
+			  })
+```
+{ "ok" : 1 }
+```
+### 3. Adicionar o papel grantRolesToUser e revokeRole para o usuário com Escrita e Leitura.
+ação grantRole 
+Acredito que este item não esteja bem formulado pois *grantRolesToUser* é um comando e *revokeRole* é uma ação.
+Com isso, vou entender que a intenção seja possibilitar que o referido usuário seja capaz de conceder e revogar papéis ( apenas ) de outros usuários apenas
+dentro do banco de dados do projeto final ( be-mean-final). Analisando o papel nativo 'userAdmin' do mongoDB, vejo que esse paepel dá outros privilégios ( por exemplo: criar novas roles ) e que, neste caso, é um privilégio indesejado. Assim, decidi criar 02 roles específicas (projectGrantRole e projectRevokeRole), dentro do banco be-mean-final, uma com a ação 'grantRole' e outra com a ação 'revokeRole'. Após isso, essas roles serão concedidas ao referido usuário.
+
+> use be-mean-final
+> db.createRole({
+role: "projectGrantRole",
+privileges: [ { resource:{ db:"be-mean-final", collection:""}, actions: ["grantRole"]} ],
+roles:[]
+}
+)
+```
+{
+        "role" : "projectGrantRole",
+        "privileges" : [
+                {
+                        "resource" : {
+                                "db" : "be-mean-final",
+                                "collection" : ""
+                        },
+                        "actions" : [
+                                "grantRole"
+                        ]
+                }
+        ],
+        "roles" : [ ]
+}
+```
+
+> db.createRole({
+role: "projectRevokeRole",
+privileges: [ { resource:{ db:"be-mean-final", collection:""}, actions: ["revokeRole"]} ],
+roles:[]
+}
+)
+```
+{
+        "role" : "projectRevokeRole",
+        "privileges" : [
+                {
+                        "resource" : {
+                                "db" : "be-mean-final",
+                                "collection" : ""
+                        },
+                        "actions" : [
+                                "revokeRole"
+                        ]
+                }
+        ],
+        "roles" : [ ]
+}
+```
+
+```
+Verificando as credenciais do usuário 'projrw'.
+```
+> db.runCommand( {usersInfo:'projrw',showCredentials:true})
+```
+{
+        "users" : [
+                {
+                        "_id" : "be-mean-final.projrw",
+                        "user" : "projrw",
+                        "db" : "be-mean-final",
+                        "credentials" : {
+                                "SCRAM-SHA-1" : {
+                                        "iterationCount" : 10000,
+                                        "salt" : "4ZNrUhXXK+PemPkLirbY9g==",
+                                        "storedKey" : "riD8XCEkEwNd+vxM75WJJwbCcvI=",
+                                        "serverKey" : "hVFKFh+tSY57d/vOtDmTjnFRViE="
+                                }
+                        },
+                        "roles" : [
+                                {
+                                        "role" : "readWrite",
+                                        "db" : "be-mean-final"
+                                }
+                        ]
+                }
+        ],
+        "ok" : 1
+}
+```
+
+```
+Adicionando as roles 'projectRevokeRole' e 'projectGrantRole' ao usuário 'projrw'.
+```
+
+> db.grantRolesToUser(
+"projrw",
+[{role: "projectGrantRole", db: "be-mean-final"},{role:"projectRevokeRole", db: "be-mean-final"}]
+)
+
+```
+Reverificando as credenciais do usuário 'projrw'.
+```
+> db.runCommand( {usersInfo:'projrw',showCredentials:true})
+```
+{
+        "users" : [
+                {
+                        "_id" : "be-mean-final.projrw",
+                        "user" : "projrw",
+                        "db" : "be-mean-final",
+                        "credentials" : {
+                                "SCRAM-SHA-1" : {
+                                        "iterationCount" : 10000,
+                                        "salt" : "4ZNrUhXXK+PemPkLirbY9g==",
+                                        "storedKey" : "riD8XCEkEwNd+vxM75WJJwbCcvI=",
+                                        "serverKey" : "hVFKFh+tSY57d/vOtDmTjnFRViE="
+                                }
+                        },
+                        "roles" : [
+                                {
+                                        "role" : "readWrite",
+                                        "db" : "be-mean-final"
+                                },
+                                {
+                                        "role" : "projectGrantRole",
+                                        "db" : "be-mean-final"
+                                },
+                                {
+                                        "role" : "projectRevokeRole",
+                                        "db" : "be-mean-final"
+                                }
+                        ]
+                }
+        ],
+        "ok" : 1
+}
+```
+
+### 4. Remover o papel grantRolesToUser para o usuário com Escrita e Leitura.
+```
+```
+### 5. Listar todos os usuários com seus papéis e ações.
+```
+```
