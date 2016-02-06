@@ -2079,6 +2079,7 @@ switched to db be-mean-final
 ```
 { "ok" : 1 }
 ```
+
 ### 3. Adicionar o papel grantRolesToUser e revokeRole para o usuário com Escrita e Leitura.
 Acredito que este item não esteja bem formulado pois `grantRolesToUser` é um comando e `revokeRole` é uma ação.
 Com isso, vou entender que a intenção seja possibilitar que o referido usuário seja capaz de conceder e revogar papéis ( apenas ) de outros usuários apenas
@@ -2475,3 +2476,14 @@ Verificando as credenciais do usuário 'projrw'.
         "ok" : 1
 }
 ```
+
+##Cluster
+
+Depois de criada toda sua base você deverá criar um cluster utilizando:
+
+### Router
+### Config Server
+### Shardings
+### Replicas
+
+
