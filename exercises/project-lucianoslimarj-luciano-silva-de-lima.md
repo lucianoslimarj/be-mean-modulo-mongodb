@@ -2168,14 +2168,15 @@ Verificando as credenciais do usuário 'projrw'.
 ```
 Adicionando as roles 'projectRevokeRole' e 'projectGrantRole' ao usuário 'projrw'.
 ```
-
-> db.grantRolesToUser(
-"projrw",
-[{role: "projectGrantRole", db: "be-mean-final"},{role:"projectRevokeRole", db: "be-mean-final"}]
-)
+> db.runCommand( {grantRolesToUser: "projrw",
+roles: [{role: "projectGrantRole", db: "be-mean-final"},{role:"projectRevokeRole", db: "be-mean-final"}] 
+} )
+```
+{ "ok" : 1 }
+```
 
 ```
-Reverificando as credenciais do usuário 'projrw'.
+Verificando as credenciais do usuário 'projrw'.
 ```
 > db.runCommand( {usersInfo:'projrw',showCredentials:true})
 ```
@@ -2214,8 +2215,264 @@ Reverificando as credenciais do usuário 'projrw'.
 ```
 
 ### 4. Remover o papel grantRolesToUser para o usuário com Escrita e Leitura.
+> db.runCommand( {revokeRolesFromUser: "projrw",
+roles: [{role: "projectGrantRole", db: "be-mean-final"}] 
+} )
 ```
+{ "ok" : 1 }
+```
+
+```
+Verificando as credenciais do usuário 'projrw'.
+```
+> db.runCommand( {usersInfo:'projrw',showCredentials:true})
+```
+{
+        "users" : [
+                {
+                        "_id" : "be-mean-final.projrw",
+                        "user" : "projrw",
+                        "db" : "be-mean-final",
+                        "credentials" : {
+                                "SCRAM-SHA-1" : {
+                                        "iterationCount" : 10000,
+                                        "salt" : "4ZNrUhXXK+PemPkLirbY9g==",
+                                        "storedKey" : "riD8XCEkEwNd+vxM75WJJwbCcvI=",
+                                        "serverKey" : "hVFKFh+tSY57d/vOtDmTjnFRViE="
+                                }
+                        },
+                        "roles" : [
+                                {
+                                        "role" : "readWrite",
+                                        "db" : "be-mean-final"
+                                },
+                                {
+                                        "role" : "projectRevokeRole",
+                                        "db" : "be-mean-final"
+                                }
+                        ]
+                }
+        ],
+        "ok" : 1
+}
 ```
 ### 5. Listar todos os usuários com seus papéis e ações.
+> db.runCommand( {usersInfo:['projrw','projr'],showPrivileges:true})
 ```
+{
+        "users" : [
+                {
+                        "_id" : "be-mean-final.projrw",
+                        "user" : "projrw",
+                        "db" : "be-mean-final",
+                        "roles" : [
+                                {
+                                        "role" : "readWrite",
+                                        "db" : "be-mean-final"
+                                },
+                                {
+                                        "role" : "projectRevokeRole",
+                                        "db" : "be-mean-final"
+                                }
+                        ],
+                        "inheritedRoles" : [
+                                {
+                                        "role" : "readWrite",
+                                        "db" : "be-mean-final"
+                                },
+                                {
+                                        "role" : "projectRevokeRole",
+                                        "db" : "be-mean-final"
+                                }
+                        ],
+                        "inheritedPrivileges" : [
+                                {
+                                        "resource" : {
+                                                "db" : "be-mean-final",
+                                                "collection" : ""
+                                        },
+                                        "actions" : [
+                                                "collStats",
+                                                "convertToCapped",
+                                                "createCollection",
+                                                "createIndex",
+                                                "dbHash",
+                                                "dbStats",
+                                                "dropCollection",
+                                                "dropIndex",
+                                                "emptycapped",
+                                                "find",
+                                                "insert",
+                                                "killCursors",
+                                                "listCollections",
+                                                "listIndexes",
+                                                "planCacheRead",
+                                                "remove",
+                                                "renameCollectionSameDB",
+                                                "revokeRole",
+                                                "update"
+                                        ]
+                                },
+                                {
+                                        "resource" : {
+                                                "anyResource" : true
+                                        },
+                                        "actions" : [
+                                                "listCollections"
+                                        ]
+                                },
+                                {
+                                        "resource" : {
+                                                "db" : "be-mean-final",
+                                                "collection" : "system.indexes"
+                                        },
+                                        "actions" : [
+                                                "collStats",
+                                                "dbHash",
+                                                "dbStats",
+                                                "find",
+                                                "killCursors",
+                                                "listCollections",
+                                                "listIndexes",
+                                                "planCacheRead"
+                                        ]
+                                },
+                                {
+                                        "resource" : {
+                                                "db" : "be-mean-final",
+                                                "collection" : "system.js"
+                                        },
+                                        "actions" : [
+                                                "collStats",
+                                                "convertToCapped",
+                                                "createCollection",
+                                                "createIndex",
+                                                "dbHash",
+                                                "dbStats",
+                                                "dropCollection",
+                                                "dropIndex",
+                                                "emptycapped",
+                                                "find",
+                                                "insert",
+                                                "killCursors",
+                                                "listCollections",
+                                                "listIndexes",
+                                                "planCacheRead",
+                                                "remove",
+                                                "renameCollectionSameDB",
+                                                "update"
+                                        ]
+                                },
+                                {
+                                        "resource" : {
+                                                "db" : "be-mean-final",
+                                                "collection" : "system.namespaces"
+                                        },
+                                        "actions" : [
+                                                "collStats",
+                                                "dbHash",
+                                                "dbStats",
+                                                "find",
+                                                "killCursors",
+                                                "listCollections",
+                                                "listIndexes",
+                                                "planCacheRead"
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "_id" : "be-mean-final.projr",
+                        "user" : "projr",
+                        "db" : "be-mean-final",
+                        "roles" : [
+                                {
+                                        "role" : "read",
+                                        "db" : "be-mean-final"
+                                }
+                        ],
+                        "inheritedRoles" : [
+                                {
+                                        "role" : "read",
+                                        "db" : "be-mean-final"
+                                }
+                        ],
+                        "inheritedPrivileges" : [
+                                {
+                                        "resource" : {
+                                                "db" : "be-mean-final",
+                                                "collection" : ""
+                                        },
+                                        "actions" : [
+                                                "collStats",
+                                                "dbHash",
+                                                "dbStats",
+                                                "find",
+                                                "killCursors",
+                                                "listCollections",
+                                                "listIndexes",
+                                                "planCacheRead"
+                                        ]
+                                },
+                                {
+                                        "resource" : {
+                                                "anyResource" : true
+                                        },
+                                        "actions" : [
+                                                "listCollections"
+                                        ]
+                                },
+                                {
+                                        "resource" : {
+                                                "db" : "be-mean-final",
+                                                "collection" : "system.indexes"
+                                        },
+                                        "actions" : [
+                                                "collStats",
+                                                "dbHash",
+                                                "dbStats",
+                                                "find",
+                                                "killCursors",
+                                                "listCollections",
+                                                "listIndexes",
+                                                "planCacheRead"
+                                        ]
+                                },
+                                {
+                                        "resource" : {
+                                                "db" : "be-mean-final",
+                                                "collection" : "system.js"
+                                        },
+                                        "actions" : [
+                                                "collStats",
+                                                "dbHash",
+                                                "dbStats",
+                                                "find",
+                                                "killCursors",
+                                                "listCollections",
+                                                "listIndexes",
+                                                "planCacheRead"
+                                        ]
+                                },
+                                {
+                                        "resource" : {
+                                                "db" : "be-mean-final",
+                                                "collection" : "system.namespaces"
+                                        },
+                                        "actions" : [
+                                                "collStats",
+                                                "dbHash",
+                                                "dbStats",
+                                                "find",
+                                                "killCursors",
+                                                "listCollections",
+                                                "listIndexes",
+                                                "planCacheRead"
+                                        ]
+                                }
+                        ]
+                }
+        ],
+        "ok" : 1
+}
 ```
