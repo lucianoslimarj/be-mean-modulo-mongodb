@@ -2557,7 +2557,8 @@ connecting to: localhost:27027/test
      host: "localhost:27027"
     }
   ]
-}
+};
+
 > rs.initiate(rsconf)
 ```
 { "ok" : 1 }
@@ -2635,7 +2636,9 @@ Analisando o status da replica `rpl_shard1`
         "ok" : 1
 }
 ```
+
 **rpl_shard2**
+
 > mongod --replSet rpl_shard2 --port 27030 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard2\rs0"
 ```
 ...
@@ -2669,7 +2672,8 @@ connecting to: localhost:27030/test
      host: "localhost:27030"
     }
   ]
-}
+};
+
 > rs.initiate(rsconf)
 ```
 { "ok" : 1 }
@@ -2749,6 +2753,7 @@ Analisando o status da replica `rpl_shard2`
 ```
 
 **rpl_shard3**
+
 > mongod --replSet rpl_shard3 --port 27033 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard3\rs0"
 > mongod --replSet rpl_shard3 --port 27034 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard3\rs1"
 > mongod --replSet rpl_shard3 --port 27035 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard3\rs2"
