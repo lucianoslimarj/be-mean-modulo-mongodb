@@ -2481,6 +2481,7 @@ Verificando as credenciais do usuário 'projrw'.
 ##Cluster
 
 Depois de criada toda sua base você deverá criar um cluster utilizando:
+
  1 Router
  1 Config Server
  3 Shardings
@@ -2520,7 +2521,7 @@ rpl_shard2 - ( {dir: shard2/rs0, port:27030}, {dir: shard2/rs1, port:27031} e {d
 rpl_shard3 - ( {dir: shard3/rs0, port:27033}, {dir: shard3/rs1, port:27034} e {dir: shard3/rs2, port:27035})
 
 **rpl_shard1**
-lu
+
 > mongod --replSet rpl_shard1 --port 27027 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard1\rs0"
 ```
 ...
