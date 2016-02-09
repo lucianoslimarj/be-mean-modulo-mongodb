@@ -2511,6 +2511,7 @@ criado.
 2016-02-08T17:28:44.283-0200 I SHARDING [Balancer] about to contact config servers and shards
 2016-02-08T17:28:44.285-0200 I NETWORK  [mongosMain] waiting for connections on port 27017
 ```
+
 ### Replicas (27027 a 27035)
 
 Dentro do diretorio *projetofinal*, vamos criar 03 diretórios (`shard1`, `shard2` e `shard3`). *Em cada* um desses diretórios vamos criar 03 diretórios (`rs0`, `rs1` e `rs2`). Em seguida, vamos iniciar as replicas sets `rpl_shard1`, `rpl_shard2` e `rpl_shard3` com a seguinte distribuição:
