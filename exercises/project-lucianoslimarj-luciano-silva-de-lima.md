@@ -2542,23 +2542,213 @@ rpl_shard3 - ( {dir: shard3/rs0, port:27033}, {dir: shard3/rs1, port:27034} e {d
 Vamos conectar, via mongo, no servidor da 27027, iniciar a replica set, adicionar os outros participantes e verificar o status.
 ```
 
-rsconf = {
-   _id: "replica_set",
+Conectando ao servidor da porta 27027 para inicialização da réplica `rpl_shard1`.
+
+> mongo --port 27027 --host localhost
+```
+MongoDB shell version: 3.0.7
+connecting to: localhost:27027/test
+```
+> rsconf = {
+   _id: "rpl_shard1",
    members: [
     {
      _id: 0,
-     host: "127.0.0.1:27017"
+     host: "localhost:27027"
     }
   ]
 }
-rs.initiate(rsconf)
+> rs.initiate(rsconf)
+```
+{ "ok" : 1 }
+```
+Após a replica set ser inicializada, o servidor no qual o mongo está logado já foi eleito como PRIMARY. Como visto pelo prompt do mongo:
+```
+rpl_shard1:OTHER>
+rpl_shard1:PRIMARY>
+rpl_shard1:PRIMARY>
+```
 
-rpl_shard2
+Adicionando os outros 02 membros da replica set
+
+> rs.add("localhost:27028")
+```
+{ "ok" : 1 }
+```
+> rs.add("localhost:27029")
+```
+{ "ok" : 1 }
+```
+Analisando o status da replica `rpl_shard1`
+
+> rs.status()
+```
+{
+        "set" : "rpl_shard1",
+        "date" : ISODate("2016-02-09T09:37:33.551Z"),
+        "myState" : 1,
+        "members" : [
+                {
+                        "_id" : 0,
+                        "name" : "localhost:27027",
+                        "health" : 1,
+                        "state" : 1,
+                        "stateStr" : "PRIMARY",
+                        "uptime" : 1800,
+                        "optime" : Timestamp(1455010614, 1),
+                        "optimeDate" : ISODate("2016-02-09T09:36:54Z"),
+                        "electionTime" : Timestamp(1455010179, 2),
+                        "electionDate" : ISODate("2016-02-09T09:29:39Z"),
+                        "configVersion" : 3,
+                        "self" : true
+                },
+                {
+                        "_id" : 1,
+                        "name" : "localhost:27028",
+                        "health" : 1,
+                        "state" : 2,
+                        "stateStr" : "SECONDARY",
+                        "uptime" : 82,
+                        "optime" : Timestamp(1455010614, 1),
+                        "optimeDate" : ISODate("2016-02-09T09:36:54Z"),
+                        "lastHeartbeat" : ISODate("2016-02-09T09:37:33.017Z"),
+                        "lastHeartbeatRecv" : ISODate("2016-02-09T09:37:32.980Z"),
+                        "pingMs" : 0,
+                        "syncingTo" : "localhost:27027",
+                        "configVersion" : 3
+                },
+                {
+                        "_id" : 2,
+                        "name" : "localhost:27029",
+                        "health" : 1,
+                        "state" : 2,
+                        "stateStr" : "SECONDARY",
+                        "uptime" : 38,
+                        "optime" : Timestamp(1455010614, 1),
+                        "optimeDate" : ISODate("2016-02-09T09:36:54Z"),
+                        "lastHeartbeat" : ISODate("2016-02-09T09:37:33.022Z"),
+                        "lastHeartbeatRecv" : ISODate("2016-02-09T09:37:33.074Z"),
+                        "pingMs" : 1,
+                        "configVersion" : 3
+                }
+        ],
+        "ok" : 1
+}
+```
+**rpl_shard2**
 > mongod --replSet rpl_shard2 --port 27030 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard2\rs0"
+```
+...
+2016-02-09T07:41:35.369-0200 I REPL     [initandlisten] Did not find local replica set configuration document at startup;  NoMatchingDocument Did not find replica set configuration document in local.system.replset
+2016-02-09T07:41:35.373-0200 I NETWORK  [initandlisten] waiting for connections on port 27030
+```
 > mongod --replSet rpl_shard2 --port 27031 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard2\rs1"
+```
+...
+2016-02-09T07:42:39.656-0200 I REPL     [initandlisten] Did not find local replica set configuration document at startup;  NoMatchingDocument Did not find replica set configuration document in local.system.replset
+2016-02-09T07:42:39.660-0200 I NETWORK  [initandlisten] waiting for connections on port 27031
+```
 > mongod --replSet rpl_shard2 --port 27032 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard2\rs2"
+```
+...
+2016-02-09T07:43:40.105-0200 I REPL     [initandlisten] Did not find local replica set configuration document at startup;  NoMatchingDocument Did not find replica set configuration document in local.system.replset
+2016-02-09T07:43:40.108-0200 I NETWORK  [initandlisten] waiting for connections on port 27032
+```
+onectando ao servidor da porta 27030 para inicialização da réplica `rpl_shard2`.
 
-rpl_shard3
+> mongo --port 27030 --host localhost
+```
+MongoDB shell version: 3.0.7
+connecting to: localhost:27030/test
+```
+> rsconf = {
+   _id: "rpl_shard2",
+   members: [
+    {
+     _id: 0,
+     host: "localhost:27030"
+    }
+  ]
+}
+> rs.initiate(rsconf)
+```
+{ "ok" : 1 }
+```
+Após a replica set ser inicializada, o servidor no qual o mongo está logado já foi eleito como PRIMARY. Como visto pelo prompt do mongo:
+```
+rpl_shard2:OTHER>
+rpl_shard2:PRIMARY>
+rpl_shard2:PRIMARY>
+```
+
+Adicionando os outros 02 membros da replica set
+
+> rs.add("localhost:27031")
+```
+{ "ok" : 1 }
+```
+> rs.add("localhost:27032")
+```
+{ "ok" : 1 }
+```
+Analisando o status da replica `rpl_shard2`
+
+> rs.status()
+```
+{
+        "set" : "rpl_shard2",
+        "date" : ISODate("2016-02-09T09:49:56.288Z"),
+        "myState" : 1,
+        "members" : [
+                {
+                        "_id" : 0,
+                        "name" : "localhost:27030",
+                        "health" : 1,
+                        "state" : 1,
+                        "stateStr" : "PRIMARY",
+                        "uptime" : 502,
+                        "optime" : Timestamp(1455011351, 1),
+                        "optimeDate" : ISODate("2016-02-09T09:49:11Z"),
+                        "electionTime" : Timestamp(1455011263, 2),
+                        "electionDate" : ISODate("2016-02-09T09:47:43Z"),
+                        "configVersion" : 3,
+                        "self" : true
+                },
+                {
+                        "_id" : 1,
+                        "name" : "localhost:27031",
+                        "health" : 1,
+                        "state" : 2,
+                        "stateStr" : "SECONDARY",
+                        "uptime" : 52,
+                        "optime" : Timestamp(1455011351, 1),
+                        "optimeDate" : ISODate("2016-02-09T09:49:11Z"),
+                        "lastHeartbeat" : ISODate("2016-02-09T09:49:55.545Z"),
+                        "lastHeartbeatRecv" : ISODate("2016-02-09T09:49:55.897Z"),
+                        "pingMs" : 0,
+                        "syncingTo" : "localhost:27030",
+                        "configVersion" : 3
+                },
+                {
+                        "_id" : 2,
+                        "name" : "localhost:27032",
+                        "health" : 1,
+                        "state" : 2,
+                        "stateStr" : "SECONDARY",
+                        "uptime" : 44,
+                        "optime" : Timestamp(1455011351, 1),
+                        "optimeDate" : ISODate("2016-02-09T09:49:11Z"),
+                        "lastHeartbeat" : ISODate("2016-02-09T09:49:55.542Z"),
+                        "lastHeartbeatRecv" : ISODate("2016-02-09T09:49:55.600Z"),
+                        "pingMs" : 0,
+                        "configVersion" : 3
+                }
+        ],
+        "ok" : 1
+}
+```
+
+**rpl_shard3**
 > mongod --replSet rpl_shard3 --port 27033 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard3\rs0"
 > mongod --replSet rpl_shard3 --port 27034 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard3\rs1"
 > mongod --replSet rpl_shard3 --port 27035 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard3\rs2"
