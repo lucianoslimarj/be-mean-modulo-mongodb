@@ -2081,9 +2081,10 @@ switched to db be-mean-final
 ```
 
 ### 3. Adicionar o papel grantRolesToUser e revokeRole para o usuário com Escrita e Leitura.
+
 Acredito que este item não esteja bem formulado pois `grantRolesToUser` é um comando e `revokeRole` é uma ação.
-Com isso, vou entender que a intenção seja possibilitar que o referido usuário seja capaz de conceder e revogar papéis ( apenas ) de outros usuários apenas
-dentro do banco de dados do projeto final ( be-mean-final). Analisando o papel nativo 'userAdmin' do mongoDB, vejo que esse paepel dá outros privilégios ( por exemplo: criar novas roles ) e que, neste caso, é um privilégio indesejado. Assim, decidi criar 02 roles específicas (projectGrantRole e projectRevokeRole), dentro do banco be-mean-final, uma com a ação 'grantRole' e outra com a ação 'revokeRole'. Após isso, essas roles serão concedidas ao referido usuário.
+Com isso, vou entender que a intenção seja possibilitar que o referido usuário seja, apenas, capaz de conceder e revogar papéis a outros usuários,
+no do banco de dados do projeto final ( be-mean-final). Analisando o papel nativo 'userAdmin' do mongoDB, vejo que esse papel dá outros privilégios ( por exemplo: criar novas roles ) e que, neste caso, é um privilégio indesejado. Assim, vamos criar 02 roles específicas (projectGrantRole e projectRevokeRole), dentro do banco be-mean-final, uma com o privilégio 'grantRole' e outra com 'revokeRole'. Após isso, essas roles serão concedidas ao referido usuário.
 
 > use be-mean-final
 > db.createRole({
@@ -2481,9 +2482,85 @@ Verificando as credenciais do usuário 'projrw'.
 
 Depois de criada toda sua base você deverá criar um cluster utilizando:
 
-### Router
-### Config Server
-### Shardings
-### Replicas
+### 1 Router
+### 1 Config Server
+### 3 Shardings
+### 3 Replicas
+
+### Config Server(27019)
+
+1. Criação do diretório do config server
+Os diretórios dos componentes do cluster estarão debaixo do diretório *projetofinal*. Assim, para o config server, um diretório `projetofinal/configdb` será
+criado.
+
+2. Inicialização do processo mongod do config server
+> mongod --configsvr --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\configdb" --port 27019
+```
+...
+2016-02-08T17:02:20.676-0200 I REPL     [initandlisten] ******
+2016-02-08T17:02:20.680-0200 I REPL     [initandlisten] creating replication oplog of size: 5MB...
+2016-02-08T17:02:20.738-0200 I REPL     [initandlisten] ******
+2016-02-08T17:02:20.743-0200 I NETWORK  [initandlisten] waiting for connections on port 27019
+```
+### Router (27017)
+> mongos --configdb localhost:27019
+```
+...
+2016-02-08T17:28:42.860-0200 I SHARDING [mongosMain] upgrade of config server to v6 successful
+2016-02-08T17:28:42.863-0200 I SHARDING [mongosMain] distributed lock 'configUpgrade/meu:27017:1454959721:41' unlocked.
+2016-02-08T17:28:44.283-0200 I SHARDING [Balancer] about to contact config servers and shards
+2016-02-08T17:28:44.285-0200 I NETWORK  [mongosMain] waiting for connections on port 27017
+```
+### Replicas (27027 a 27035)
+
+Dentro do diretorio *projetofinal*, vamos criar 03 diretórios (`shard1`, `shard2` e `shard3`). *Em cada* um desses diretórios vamos criar 03 diretórios (`rs0`, `rs1` e `rs2`). Em seguida, vamos iniciar as replicas sets `rpl_shard1`, `rpl_shard2` e `rpl_shard3` com a seguinte distribuição:
+
+rpl_shard1 - ( {dir: shard1/rs0, port:27027}, {dir: shard1/rs1, port:27028} e {dir: shard1/rs2, port:27029})
+rpl_shard2 - ( {dir: shard2/rs0, port:27030}, {dir: shard2/rs1, port:27031} e {dir: shard2/rs2, port:27032})
+rpl_shard3 - ( {dir: shard3/rs0, port:27033}, {dir: shard3/rs1, port:27034} e {dir: shard3/rs2, port:27035})
+
+*rpl_shard1*
+
+> mongod --replSet rpl_shard1 --port 27027 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard1\rs0"
+```
+...
+2016-02-09T07:07:33.852-0200 I REPL     [initandlisten] Did not find local replica set configuration document at startup;  NoMatchingDocument Did not find replica set configuration document in local.system.replset
+2016-02-09T07:07:33.856-0200 I NETWORK  [initandlisten] waiting for connections on port 27027
+```
+> mongod --replSet rpl_shard1 --port 27028 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard1\rs1"
+```
+...
+2016-02-09T07:09:54.880-0200 I REPL     [initandlisten] Did not find local replica set configuration document at startup;  NoMatchingDocument Did not find replica set configuration document in local.system.replset
+2016-02-09T07:09:54.884-0200 I NETWORK  [initandlisten] waiting for connections on port 27028
+```
+> mongod --replSet rpl_shard1 --port 27029 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard1\rs2"
+```
+...
+2016-02-09T07:11:20.483-0200 I REPL     [initandlisten] Did not find local replica set configuration document at startup;  NoMatchingDocument Did not find replica set configuration document in local.system.replset
+2016-02-09T07:11:20.486-0200 I NETWORK  [initandlisten] waiting for connections on port 27029
+Vamos conectar, via mongo, no servidor da 27027, iniciar a replica set, adicionar os outros participantes e verificar o status.
+```
+
+rsconf = {
+   _id: "replica_set",
+   members: [
+    {
+     _id: 0,
+     host: "127.0.0.1:27017"
+    }
+  ]
+}
+rs.initiate(rsconf)
+
+rpl_shard2
+> mongod --replSet rpl_shard2 --port 27030 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard2\rs0"
+> mongod --replSet rpl_shard2 --port 27031 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard2\rs1"
+> mongod --replSet rpl_shard2 --port 27032 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard2\rs2"
+
+rpl_shard3
+> mongod --replSet rpl_shard3 --port 27033 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard3\rs0"
+> mongod --replSet rpl_shard3 --port 27034 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard3\rs1"
+> mongod --replSet rpl_shard3 --port 27035 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard3\rs2"
 
 
+Você deverá escolher qual sua coleção deverá ser shardeada para poder aguentar muita carga repentinamente e deverá replicar cada Shard, pode ser feito localmente como em alguma VPS FREE.
