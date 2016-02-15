@@ -8,13 +8,13 @@
    
    Não usaria o mongoDB para aplicações em 2 situações:
    
-     1. Aplicações com operações complexas que envolvam vários grupos de dados.
+     1. Aplicações com operações complexas que envolvam vários grupos/cálculos de dados.
 	 2. Aplicações que REALMENTE requerem transações ACID ( Atomicity, Consistency, Isolation e Durability). Não dando alternativa para transações BASE
-	    (Basic Availability, Soft-state e Eventual consistency)
+	    (Basic Availability, Soft-state e Eventual consistency).
 		
    Uma tipo de aplicação que se enquadra nesta categoria são as aplicações financeiras, principalmente aquelas envolvendo transações bancárias. Nestas
    aplicações muito provável que uma única operação envolva atualizações em mais de um documento ( contas, movimentações) e o MongoDB não garante a atomicidade
-   quando mais de um documento é envolvido.
+   quando uma operação envolve mais de um documento.
    Em contra-partida, o mongoDB pode ser usado em uma grande variedade de aplicações: e-commerce, chats, blogs, web analystics, analytics em tempo real, análise de logs de aplicação, etc...
 ```
 ## Qual a modelagem da sua coleção de `users`?
@@ -37,15 +37,10 @@
 		hashToken: String
 	}
 	db.users.createIndex( {username: 1},{unique:true} )
-	
-	--retirar o campo username ? Fazer login pelo email ?
-	--Criar indice unico para email e/ou username ?
 ```
 ## Qual a modelagem da sua coleção de `projects`?
-
 ```
-	Considerações: Embora na modelagem, as realocações apresentam-se com sendo 1:1, o documento foi modelado podendo apresentar várias realocações e ainda
-    com a flexibilidade de termos mais alguma informação ( além da data ) no processo de realocação.
+	Considerações: Os campos 'name' e 'avatarPath' foram desnormalizados dentro de 'members' para uma melhor performance nas leituras.
 	
 	projects: { 
 		name: String,
@@ -59,6 +54,8 @@
 		visualizableMod: Boolean,
 		members : [{
 			user_id: objectId,
+			name: String,
+			avatarPath  : String,
 			type: String,
 			notify: Boolean
 		}],
@@ -95,6 +92,8 @@
 			historics: [{realocateDate: Date}]
 			members : [{
 				user_id: objectId,
+				name: String,
+			    avatarPath  : String,
 				type: String,
 				notify: Boolean
 			}],
@@ -103,6 +102,8 @@
 				createDate: Date,
 				members : [{
 					user_id: objectId,
+					name: String,
+					avatarPath  : String,
 					type: String,
 					notify: Boolean
 				}],
@@ -460,7 +461,7 @@
 	};
 	
 	//Monta um array com os IDs de usuarios previamente cadastrados para associação como membros de projetos
-	var usu_cursor = db.users.find({},{_id:1,name:1});
+	var usu_cursor = db.users.find({},{_id:1,name:1,avatarPath:1});
 	var usu_array = usu_cursor.toArray();
 	
 	//Retorna uma quantidade IDs ( size ) de usuários consecutivos a partir de uma posição especificada
@@ -468,7 +469,7 @@
 	    var ret = [];
 		if ( fromIndex >= 0 && fromIndex <= size ) {
 		  for (var i=fromIndex;i<fromIndex+size;i++) {
-			ret.push(usu_array[i]._id);
+			ret.push({_id: usu_array[i]._id, name: usu_array[i].name, avatarPath: usu_array[i].avatarPath});
 		  }
 		}
 		return ret;
@@ -488,7 +489,9 @@
 		var vetUserIDs = getFollowedUserIDs (j, 5);
 		
 		for (var i=0; i<project.members.length; i++) {
-		  project.members[i].user_id = vetUserIDs[i];
+		  project.members[i].user_id = vetUserIDs[i]._id;
+		  project.members[i].name = vetUserIDs[i].name;
+		  project.members[i].avatarPath = vetUserIDs[i].avatarPath;
 		  project.members[i].notify = getRandomBoolean();
 		}
 		project.goals.forEach(function(goal){
@@ -512,7 +515,7 @@
 					activity.members = [];
 					activity.comments = [];
 					//Adiciona a atividade
-					db.activities1.insert(activity);
+					db.activities.insert(activity);
 					goal.activities.push({'activity_id':id, 'name': activity.name});
 				});
 				//Remove a propriedade "pre_activities" do objeto goal.
@@ -520,7 +523,7 @@
 			}
 		});
 		//Adiciona o projeto
-		db.projects1.insert(project);	
+		db.projects.insert(project);	
 	}
 ```	
 > db.projects.createIndex({tags:1})
@@ -573,26 +576,36 @@
         "members" : [
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a93"),
+						"name" : "Francisco Antunes",
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FranciscoAntunes.jpeg",
                         "type" : "idealizador",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a94"),
+						"name" : "Maiara Cordovil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/MaiaraCordovil.jpeg",
                         "type" : "engenheiro",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a95"),
+						"name" : "Alexandre Plastino", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/AlexandrePlastino.jpeg",
                         "type" : "mecanico",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a96"),
+						"name" : "Fernanda Albuquerque", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FernandaAlbuquerque.jpeg",
                         "type" : "eletricista",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a97"),
+						"name" : "Elifarley Cruz", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/ElifarleyCruz.jpeg",
                         "type" : "montador",
                         "notify" : true
                 }
@@ -675,26 +688,36 @@ project: 56a7b6005114717dd2af2add -> member: 569cd0535114717dd2af2a9b
         "members" : [
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a93"),
+						"name" : "Francisco Antunes",
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FranciscoAntunes.jpeg",
                         "type" : "idealizador",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a94"),
+						"name" : "Maiara Cordovil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/MaiaraCordovil.jpeg",
                         "type" : "engenheiro",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a95"),
+						"name" : "Alexandre Plastino", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/AlexandrePlastino.jpeg",
                         "type" : "mecanico",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a96"),
+						"name" : "Fernanda Albuquerque", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FernandaAlbuquerque.jpeg",
                         "type" : "eletricista",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a97"),
+						"name" : "Elifarley Cruz", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/ElifarleyCruz.jpeg",
                         "type" : "montador",
                         "notify" : true
                 }
@@ -944,7 +967,7 @@ function getUserIDs ( fromIndex, skip, size ) {
 	var ret = [];
 	for( var x=0;x<usu_array.length && ret.length<size;x++) {
 	  if ( !( x >= fromIndex && x <= (fromIndex + (skip -1) ) ) ) { // é um userID que ainda não foi utilizado
-		ret.push(usu_array[x]._id);
+		ret.push({_id: usu_array[x]._id, name: usu_array[x].name, avatarPath: usu_array[x].avatarPath});
 	  }
 	}
 	return ret;
@@ -954,28 +977,38 @@ function getUserIDs ( fromIndex, skip, size ) {
 {
         "_id" : ObjectId("56a7b6005114717dd2af2ad3"),
         "members" : [
-                {
+		 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a93"),
+						"name" : "Francisco Antunes",
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FranciscoAntunes.jpeg",
                         "type" : "idealizador",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a94"),
+						"name" : "Maiara Cordovil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/MaiaraCordovil.jpeg",
                         "type" : "engenheiro",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a95"),
+						"name" : "Alexandre Plastino", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/AlexandrePlastino.jpeg",
                         "type" : "mecanico",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a96"),
+						"name" : "Fernanda Albuquerque", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FernandaAlbuquerque.jpeg",
                         "type" : "eletricista",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a97"),
+						"name" : "Elifarley Cruz", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/ElifarleyCruz.jpeg",
                         "type" : "montador",
                         "notify" : true
                 }
@@ -986,29 +1019,40 @@ function getUserIDs ( fromIndex, skip, size ) {
         "members" : [
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a94"),
-                        "type" : "idealizador",
-                        "notify" : false
-                },
-                {
-                        "user_id" : ObjectId("569cd0535114717dd2af2a95"),
-                        "type" : "astronauta",
+						"name" : "Maiara Cordovil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/MaiaraCordovil.jpeg",
+                        "type" : "engenheiro",
                         "notify" : true
                 },
                 {
-                        "user_id" : ObjectId("569cd0535114717dd2af2a96"),
-                        "type" : "físico",
+                        "user_id" : ObjectId("569cd0535114717dd2af2a95"),
+						"name" : "Alexandre Plastino", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/AlexandrePlastino.jpeg",
+                        "type" : "mecanico",
                         "notify" : false
                 },
                 {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a96"),
+						"name" : "Fernanda Albuquerque", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FernandaAlbuquerque.jpeg",
+                        "type" : "eletricista",
+                        "notify" : true
+                },
+                {
                         "user_id" : ObjectId("569cd0535114717dd2af2a97"),
-                        "type" : "físico",
+						"name" : "Elifarley Cruz", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/ElifarleyCruz.jpeg",
+                        "type" : "montador",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a98"),
+						"name" : "Rodolfo Falante", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/RodolfoFalante.jpeg",
                         "type" : "físico",
                         "notify" : true
                 }
+				
         ]
 }
 {
@@ -1016,26 +1060,36 @@ function getUserIDs ( fromIndex, skip, size ) {
         "members" : [
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a95"),
-                        "type" : "agente do governo",
+						"name" : "Alexandre Plastino", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/AlexandrePlastino.jpeg",
+                        "type" : "mecanico",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a96"),
-                        "type" : "controlador",
+						"name" : "Fernanda Albuquerque", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FernandaAlbuquerque.jpeg",
+                        "type" : "eletricista",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a97"),
-                        "type" : "agente de segurança",
-                        "notify" : false
+						"name" : "Elifarley Cruz", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/ElifarleyCruz.jpeg",
+                        "type" : "montador",
+                        "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a98"),
+						"name" : "Rodolfo Falante", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/RodolfoFalante.jpeg",
                         "type" : "agente de segurança",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a99"),
+						"name" : "Frederico Almeida", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FredericoAlmeida.jpeg",
                         "type" : "piloto",
                         "notify" : false
                 }
@@ -1044,28 +1098,38 @@ function getUserIDs ( fromIndex, skip, size ) {
 {
         "_id" : ObjectId("56a7b6005114717dd2af2adc"),
         "members" : [
-                {
+                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a96"),
-                        "type" : "financiador",
-                        "notify" : false
+						"name" : "Fernanda Albuquerque", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FernandaAlbuquerque.jpeg",
+                        "type" : "eletricista",
+                        "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a97"),
-                        "type" : "químico",
+						"name" : "Elifarley Cruz", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/ElifarleyCruz.jpeg",
+                        "type" : "montador",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a98"),
+						"name" : "Rodolfo Falante", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/RodolfoFalante.jpeg",
                         "type" : "físico",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a99"),
+						"name" : "Frederico Almeida", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FredericoAlmeida.jpeg",
                         "type" : "biólogo",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a9a"),
+						"name" : "Amanda Gentil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/AmandaGentil.jpeg",
                         "type" : "químico",
                         "notify" : false
                 }
@@ -1076,26 +1140,36 @@ function getUserIDs ( fromIndex, skip, size ) {
         "members" : [
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a97"),
-                        "type" : "financiador",
+						"name" : "Elifarley Cruz", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/ElifarleyCruz.jpeg",
+                        "type" : "montador",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a98"),
+						"name" : "Rodolfo Falante", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/RodolfoFalante.jpeg",
                         "type" : "agente social",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a99"),
+						"name" : "Frederico Almeida", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FredericoAlmeida.jpeg",
                         "type" : "policial",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a9a"),
+						"name" : "Amanda Gentil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/AmandaGentil.jpeg",
                         "type" : "policial",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a9b"),
+						"name" : "Patricia Aranha", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/PatriciaAranha.jpeg",
                         "type" : "procurador público",
                         "notify" : false
                 }
@@ -1107,7 +1181,7 @@ function getUserIDs ( fromIndex, skip, size ) {
 	var vetUserIDs = getUserIDs(x,5,2);
 	if (vetUserIDs) {
 		for(var y=0;y<vetUserIDs.length;y++) {
-		    var member = { "user_id" : vetUserIDs[y], "type" : "type_" + x + y, "notify" : getRandomBoolean() }
+		    var member = { "user_id" : vetUserIDs[y]._id, "name":vetUserIDs[y].name, "avatarPath":vetUserIDs[y].avatarPath, "type" : "type_" + x + y, "notify" : getRandomBoolean() };
 			db.projects.update({ _id:vetProjIDs[x]._id },{ $push: { members: member }});
 		}
 	}
@@ -1122,36 +1196,50 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
         "members" : [
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a93"),
+						"name" : "Francisco Antunes",
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FranciscoAntunes.jpeg",
                         "type" : "idealizador",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a94"),
+						"name" : "Maiara Cordovil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/MaiaraCordovil.jpeg",
                         "type" : "engenheiro",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a95"),
+						"name" : "Alexandre Plastino", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/AlexandrePlastino.jpeg",
                         "type" : "mecanico",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a96"),
+						"name" : "Fernanda Albuquerque", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FernandaAlbuquerque.jpeg",
                         "type" : "eletricista",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a97"),
+						"name" : "Elifarley Cruz", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/ElifarleyCruz.jpeg",
                         "type" : "montador",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a98"),
+						"name" : "Rodolfo Falante", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/RodolfoFalante.jpeg",
                         "type" : "type_00",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a99"),
+						"name" : "Frederico Almeida", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FredericoAlmeida.jpeg",
                         "type" : "type_01",
                         "notify" : false
                 }
@@ -1160,38 +1248,52 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 {
         "_id" : ObjectId("56a7b6005114717dd2af2ad6"),
         "members" : [
-                {
+               {
                         "user_id" : ObjectId("569cd0535114717dd2af2a94"),
-                        "type" : "idealizador",
-                        "notify" : false
-                },
-                {
-                        "user_id" : ObjectId("569cd0535114717dd2af2a95"),
-                        "type" : "astronauta",
+						"name" : "Maiara Cordovil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/MaiaraCordovil.jpeg",
+                        "type" : "engenheiro",
                         "notify" : true
                 },
                 {
-                        "user_id" : ObjectId("569cd0535114717dd2af2a96"),
-                        "type" : "físico",
+                        "user_id" : ObjectId("569cd0535114717dd2af2a95"),
+						"name" : "Alexandre Plastino", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/AlexandrePlastino.jpeg",
+                        "type" : "mecanico",
                         "notify" : false
                 },
                 {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a96"),
+						"name" : "Fernanda Albuquerque", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FernandaAlbuquerque.jpeg",
+                        "type" : "eletricista",
+                        "notify" : true
+                },
+                {
                         "user_id" : ObjectId("569cd0535114717dd2af2a97"),
-                        "type" : "físico",
+						"name" : "Elifarley Cruz", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/ElifarleyCruz.jpeg",
+                        "type" : "montador",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a98"),
+						"name" : "Rodolfo Falante", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/RodolfoFalante.jpeg",
                         "type" : "físico",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a93"),
+						"name" : "Francisco Antunes",
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FranciscoAntunes.jpeg",
                         "type" : "type_10",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a99"),
+						"name" : "Frederico Almeida", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FredericoAlmeida.jpeg",
                         "type" : "type_11",
                         "notify" : true
                 }
@@ -1200,38 +1302,52 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 {
         "_id" : ObjectId("56a7b6005114717dd2af2ad9"),
         "members" : [
-                {
+                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a95"),
-                        "type" : "agente do governo",
+						"name" : "Alexandre Plastino", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/AlexandrePlastino.jpeg",
+                        "type" : "mecanico",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a96"),
-                        "type" : "controlador",
+						"name" : "Fernanda Albuquerque", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FernandaAlbuquerque.jpeg",
+                        "type" : "eletricista",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a97"),
-                        "type" : "agente de segurança",
-                        "notify" : false
+						"name" : "Elifarley Cruz", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/ElifarleyCruz.jpeg",
+                        "type" : "montador",
+                        "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a98"),
-                        "type" : "agente de segurança",
+						"name" : "Rodolfo Falante", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/RodolfoFalante.jpeg",
+                        "type" : "físico",
+                        "notify" : true
+                },
+                {
+                        "user_id" : ObjectId("569cd0535114717dd2af2a93"),
+						"name" : "Francisco Antunes",
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FranciscoAntunes.jpeg",
+                        "type" : "type_10",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a99"),
-                        "type" : "piloto",
-                        "notify" : false
-                },
-                {
-                        "user_id" : ObjectId("569cd0535114717dd2af2a93"),
-                        "type" : "type_20",
-                        "notify" : false
+						"name" : "Frederico Almeida", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FredericoAlmeida.jpeg",
+                        "type" : "type_11",
+                        "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a94"),
+						"name" : "Maiara Cordovil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/MaiaraCordovil.jpeg",
                         "type" : "type_21",
                         "notify" : true
                 }
@@ -1242,36 +1358,50 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
         "members" : [
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a96"),
+						"name" : "Fernanda Albuquerque", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FernandaAlbuquerque.jpeg",
                         "type" : "financiador",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a97"),
+						"name" : "Elifarley Cruz", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/ElifarleyCruz.jpeg",
                         "type" : "químico",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a98"),
+						"name" : "Rodolfo Falante", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/RodolfoFalante.jpeg",
                         "type" : "físico",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a99"),
+						"name" : "Frederico Almeida", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FredericoAlmeida.jpeg",
                         "type" : "biólogo",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a9a"),
+						"name" : "Amanda Gentil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/AmandaGentil.jpeg",
                         "type" : "químico",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a93"),
+						"name" : "Francisco Antunes",
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FranciscoAntunes.jpeg",
                         "type" : "type_30",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a94"),
+						"name" : "Maiara Cordovil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/MaiaraCordovil.jpeg",
                         "type" : "type_31",
                         "notify" : true
                 }
@@ -1282,36 +1412,50 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
         "members" : [
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a97"),
+						"name" : "Elifarley Cruz", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/ElifarleyCruz.jpeg",						
                         "type" : "financiador",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a98"),
+						"name" : "Rodolfo Falante", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/RodolfoFalante.jpeg",						
                         "type" : "agente social",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a99"),
+						"name" : "Frederico Almeida", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FredericoAlmeida.jpeg",						
                         "type" : "policial",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a9a"),
+						"name" : "Amanda Gentil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/AmandaGentil.jpeg",
                         "type" : "policial",
                         "notify" : true
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a9b"),
+						"name" : "Patricia Aranha", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/PatriciaAranha.jpeg",						
                         "type" : "procurador público",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a93"),
+						"name" : "Francisco Antunes",
+						"avatarPath" : "http://s3.amazonaws.com/avatar/FranciscoAntunes.jpeg",
                         "type" : "type_40",
                         "notify" : false
                 },
                 {
                         "user_id" : ObjectId("569cd0535114717dd2af2a94"),
+						"name" : "Maiara Cordovil", 
+						"avatarPath" : "http://s3.amazonaws.com/avatar/MaiaraCordovil.jpeg",
                         "type" : "type_41",
                         "notify" : false
                 }
@@ -1457,7 +1601,9 @@ Por último, insere um comentário em cada em cada atividades selecionada.
 	
 	var vetUserIDs = getFollowedUserIDs (0, newProject.members.length);
 	for (var i=0; i<newProject.members.length; i++) {
-		newProject.members[i].user_id = vetUserIDs[i];
+		newProject.members[i].user_id = vetUserIDs[i]._id;
+		newProject.members[i].name = vetUserIDs[i].name;
+		newProject.members[i].avatarPath = vetUserIDs[i].avatarPath;
 		newProject.members[i].notify = getRandomBoolean();
 	}
 	// Prepara as goals
@@ -2657,7 +2803,8 @@ Analisando o status da replica `rpl_shard1`
 2016-02-09T07:43:40.105-0200 I REPL     [initandlisten] Did not find local replica set configuration document at startup;  NoMatchingDocument Did not find replica set configuration document in local.system.replset
 2016-02-09T07:43:40.108-0200 I NETWORK  [initandlisten] waiting for connections on port 27032
 ```
-onectando ao servidor da porta 27030 para inicialização da réplica `rpl_shard2`.
+
+Conectando ao servidor da porta 27030 para inicialização da réplica `rpl_shard2`.
 
 > mongo --port 27030 --host localhost
 ```
@@ -2755,8 +2902,175 @@ Analisando o status da replica `rpl_shard2`
 **rpl_shard3**
 
 > mongod --replSet rpl_shard3 --port 27033 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard3\rs0"
+```
+...
+2016-02-09T07:55:59.747-0200 I REPL     [initandlisten] Did not find local replica set configuration document at startup;  NoMatchingDocument Did not find replica set configuration document in local.system.replset
+2016-02-09T07:55:59.751-0200 I NETWORK  [initandlisten] waiting for connections on port 27033
+```
+
 > mongod --replSet rpl_shard3 --port 27034 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard3\rs1"
+```
+...
+2016-02-09T07:57:00.087-0200 I REPL     [initandlisten] Did not find local replica set configuration document at startup;  NoMatchingDocument Did not find replica set configuration document in local.system.replset
+2016-02-09T07:57:00.096-0200 I NETWORK  [initandlisten] waiting for connections on port 27034
+```
 > mongod --replSet rpl_shard3 --port 27035 --dbpath "C:\Program Files\MongoDB\Server\3.0\data\projetofinal\shard3\rs2"
+```
+...
+2016-02-09T07:57:57.383-0200 I REPL     [initandlisten] Did not find local replica set configuration document at startup;  NoMatchingDocument Did not find replica set configuration document in local.system.replset
+2016-02-09T07:57:57.387-0200 I NETWORK  [initandlisten] waiting for connections on port 27035
+```
 
+Conectando ao servidor da porta 27030 para inicialização da réplica `rpl_shard2`.
 
-Você deverá escolher qual sua coleção deverá ser shardeada para poder aguentar muita carga repentinamente e deverá replicar cada Shard, pode ser feito localmente como em alguma VPS FREE.
+> mongo --port 27033 --host localhost
+```
+MongoDB shell version: 3.0.7
+connecting to: localhost:27033/test
+```
+> rsconf = {
+   _id: "rpl_shard3",
+   members: [
+    {
+     _id: 0,
+     host: "localhost:27033"
+    }
+  ]
+};
+
+> rs.initiate(rsconf)
+```
+{ "ok" : 1 }
+```
+Após a replica set ser inicializada, o servidor no qual o mongo está logado já foi eleito como PRIMARY. Como visto pelo prompt do mongo:
+```
+rpl_shard3:OTHER>
+rpl_shard3:PRIMARY>
+rpl_shard3:PRIMARY>
+```
+
+Adicionando os outros 02 membros da replica set
+
+> rs.add("localhost:27034")
+```
+{ "ok" : 1 }
+```
+> rs.add("localhost:27035")
+```
+{ "ok" : 1 }
+```
+Analisando o status da replica `rpl_shard3`
+
+> rs.status()
+```
+{
+        "set" : "rpl_shard3",
+        "date" : ISODate("2016-02-09T10:02:22.663Z"),
+        "myState" : 1,
+        "members" : [
+                {
+                        "_id" : 0,
+                        "name" : "localhost:27033",
+                        "health" : 1,
+                        "state" : 1,
+                        "stateStr" : "PRIMARY",
+                        "uptime" : 383,
+                        "optime" : Timestamp(1455012122, 1),
+                        "optimeDate" : ISODate("2016-02-09T10:02:02Z"),
+                        "electionTime" : Timestamp(1455012073, 2),
+                        "electionDate" : ISODate("2016-02-09T10:01:13Z"),
+                        "configVersion" : 3,
+                        "self" : true
+                },
+                {
+                        "_id" : 1,
+                        "name" : "localhost:27034",
+                        "health" : 1,
+                        "state" : 2,
+                        "stateStr" : "SECONDARY",
+                        "uptime" : 27,
+                        "optime" : Timestamp(1455012122, 1),
+                        "optimeDate" : ISODate("2016-02-09T10:02:02Z"),
+                        "lastHeartbeat" : ISODate("2016-02-09T10:02:22.517Z"),
+                        "lastHeartbeatRecv" : ISODate("2016-02-09T10:02:21.029Z"),
+                        "pingMs" : 0,
+                        "syncingTo" : "localhost:27033",
+                        "configVersion" : 3
+                },
+                {
+                        "_id" : 2,
+                        "name" : "localhost:27035",
+                        "health" : 1,
+                        "state" : 2,
+                        "stateStr" : "SECONDARY",
+                        "uptime" : 20,
+                        "optime" : Timestamp(1455012122, 1),
+                        "optimeDate" : ISODate("2016-02-09T10:02:02Z"),
+                        "lastHeartbeat" : ISODate("2016-02-09T10:02:22.513Z"),
+                        "lastHeartbeatRecv" : ISODate("2016-02-09T10:02:22.581Z"),
+                        "pingMs" : 0,
+                        "configVersion" : 3
+                }
+        ],
+        "ok" : 1
+}
+```
+
+### Shardings
+Uma vez que as réplicas `rpl_shard1`, `rpl_shard2` e `rpl_shard3` estão no ar, vamos adicioná-las como shardings ao cluster. Para isso, vamos conectar um mongo ao mongos, já inicializado na porta 27017 e realizar os devidos comandos.
+
+**Conectando ao Mongos**
+
+> mongo --port 27017 --host localhost
+```
+MongoDB shell version: 3.0.7
+connecting to: localhost:27017/test
+mongos>
+```
+**Adicionando os shards ao cluster**
+
+Optou-se por utilizar o comando addShard do banco de dados, ao invés do sh.addShard(...), pela opção de poder especificar o nome do shard.
+
+mongos> use admin
+```
+switched to db admin
+```
+mongos> db.runCommand({addShard:"rpl_shard1/localhost:27027", name:"shard_rpl_1"})
+```
+{ "shardAdded" : "shard_rpl_1", "ok" : 1 }
+```
+mongos> db.runCommand({addShard:"rpl_shard2/localhost:27030", name:"shard_rpl_2"})
+```
+{ "shardAdded" : "shard_rpl_2", "ok" : 1 }
+```
+mongos> db.runCommand({addShard:"rpl_shard3/localhost:27033", name:"shard_rpl_3"})
+```
+{ "shardAdded" : "shard_rpl_3", "ok" : 1 }
+```
+**Verificando o status do cluster**
+mongos> sh.status()
+```
+--- Sharding Status ---
+  sharding version: {
+        "_id" : 1,
+        "minCompatibleVersion" : 5,
+        "currentVersion" : 6,
+        "clusterId" : ObjectId("56b8ec6aa6212d1cccb72a75")
+}
+  shards:
+        {  "_id" : "shard_rpl_1",  "host" : "rpl_shard1/localhost:27027,localhost:27028,localhost:27029" }
+        {  "_id" : "shard_rpl_2",  "host" : "rpl_shard2/localhost:27030,localhost:27031,localhost:27032" }
+        {  "_id" : "shard_rpl_3",  "host" : "rpl_shard3/localhost:27033,localhost:27034,localhost:27035" }
+  balancer:
+        Currently enabled:  yes
+        Currently running:  no
+        Failed balancer rounds in last 5 attempts:  0
+        Migration Results for the last 24 hours:
+                No recent migrations
+  databases:
+        {  "_id" : "admin",  "partitioned" : false,  "primary" : "config" }
+```		
+### Habilitando sharding de coleção
+
+A decisão de shardear, ou não, uma coleção depende da modelagem dos dados e de características e requisitos específicos quando a aplicação é submetida a situação de stress. Nestas situações, escritas ou leituras podem causar gargalos, afetando a performance com um todo. Assim, de acordo com o comportamento esperado pela aplicação, o processo de sharding deve ser formulado de tal forma a minimizar os travamentos indesejados. Em algumas situações, o processo de sharding de visar uma escrita espalhadas pelos shards de forma que uma 'rajada' de inserções ou atualizações não se concentre em apenas um shard ( limitado a capacidade daquele shard ). Por outro lado, temos a situação em que para leituras massivas, bom seria se todos os dados estivessem contínuos em um único shard ou em uma quantidade mínima de shards. Shardings desnecessários devem ser evitados, pois os desafios com ele são bem consideráveis. Uma desses desafios é a escolha correta da chave de sharding. A escolha errada da chave de sharding pode trazer problemas na performance, capacidade e funcionalidade do banco de dados e no cluster. Daí, a importância de modelar os dados, já pensando na necessidade, ou não, de shardear algumas coleções.
+Acredito que os requisitos de leitura e escrita solicitados aqui neste projeto foram insuficientes para a decisão de sharding, ou não. Por se tratar de um exercício, mesmo assumindo que o sharding é necessário, também ( pelos requisitios ) está difícil determinar uma coleção canditada ao particionamento. Sem olhar muito para os tópicos Retrieve e Update ( deste projeto ), uma coleção que acredito que teria um crescimento não previsto seria a coleção de atividades, devido aos comentários que estão embutidos nesta coleção. Assim, escolheria essa coleção a ser shardeada com uma chave pelo hash do campo '_id'. Assim, teríamos uma performance nas inserções e atualizações e nas leituras teríamos uma quantidade de shards ( a ser lido ) bem determinado.
