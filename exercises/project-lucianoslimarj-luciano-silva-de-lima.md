@@ -1053,7 +1053,6 @@ function getUserIDs ( fromIndex, skip, size ) {
                         "type" : "físico",
                         "notify" : true
                 }
-				
         ]
 }
 {
