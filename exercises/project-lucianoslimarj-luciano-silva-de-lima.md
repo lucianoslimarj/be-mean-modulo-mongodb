@@ -972,12 +972,13 @@ function getUserIDs ( fromIndex, skip, size ) {
 	}
 	return ret;
 }
+
 >  db.projects.find({},{"members":1}).pretty()
 ```
 {
         "_id" : ObjectId("56a7b6005114717dd2af2ad3"),
         "members" : [
-		 {
+				{
                         "user_id" : ObjectId("569cd0535114717dd2af2a93"),
 						"name" : "Francisco Antunes",
 						"avatarPath" : "http://s3.amazonaws.com/avatar/FranciscoAntunes.jpeg",
@@ -1012,7 +1013,7 @@ function getUserIDs ( fromIndex, skip, size ) {
                         "type" : "montador",
                         "notify" : true
                 }
-        ]
+					]
 }
 {
         "_id" : ObjectId("56a7b6005114717dd2af2ad6"),
