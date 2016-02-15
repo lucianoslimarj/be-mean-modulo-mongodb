@@ -1177,6 +1177,7 @@ function getUserIDs ( fromIndex, skip, size ) {
 }
 ```
 > var vetProjIDs = db.projects.find({},{_id:1}).sort({_id:1}).toArray();
+
 > for(var x=0;x<vetProjIDs.length;x++) {
 	var vetUserIDs = getUserIDs(x,5,2);
 	if (vetUserIDs) {
