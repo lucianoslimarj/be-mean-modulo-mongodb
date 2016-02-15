@@ -1486,6 +1486,7 @@ Por último, insere um comentário em cada em cada atividades selecionada.
 		}
 	}
  });
+ 
  > db.activities.find({},{name:1,comments:1}).pretty()
 ```
 {
@@ -1571,7 +1572,7 @@ Por último, insere um comentário em cada em cada atividades selecionada.
         "comments" : [ ]
 }
 ```
-### 5. Adicione 1 projeto inteiro com UPSERT.
+### 5. Adicione 1 projeto inteiro com UPSERT
 
 	var newProject = 	{ 	name: "Inserido via upsert",
 							description: "Fazendo parte de um exercício de inserção via upsert.",
@@ -1675,7 +1676,7 @@ WriteResult({
 
 ##Delete - remoção
 
-### 1. Apague todos os projetos que não possuam tags.
+### 1. Apague todos os projetos que não possuam tags
 ```
 Projetos que não tem tags são os projetos que atendem a uma das condições:
 	1. Não possuam a campo 'tags';
@@ -1698,7 +1699,7 @@ WriteResult({ "nRemoved" : 0 })
 6
 ```
 
-### 2. Apague todos os projetos que não possuam comentários nas atividades.
+### 2. Apague todos os projetos que não possuam comentários nas atividades
 
 ```
 //Verificando como estão os comentários das atividades:
@@ -1804,7 +1805,7 @@ projArr
 WriteResult({ "nRemoved" : 1 })
 ```
 
-### 3. Apague todos os projetos que não possuam atividades.
+### 3. Apague todos os projetos que não possuam atividades
 ```
 //Verificando as goals e ativitidades de cada projeto.
 ```
@@ -1891,7 +1892,7 @@ WriteResult({ "nRemoved" : 1 })
 WriteResult({ "nRemoved" : 2 })
 ```
 
-### 4. Escolha 2 usuário e apague todos os projetos em que os 2 fazem parte.
+### 4. Escolha 2 usuário e apague todos os projetos em que os 2 fazem parte
 ```
 Vamos analisar como estão os membros cadastrados para os projetos remanescentes.
 ```
@@ -2160,7 +2161,7 @@ Reanalisando os membros dos projetos remanescentes.
         ]
 }
 ```
-### 5. Apague todos os projetos que possuam uma determinada tag em goal.
+### 5. Apague todos os projetos que possuam uma determinada tag em goal
 ```
 Verificando as tags de goals dos projetos.
 ```
@@ -2206,7 +2207,7 @@ Contabilizando o total de documentos na coleção 'projects'
 
 ##Gerenciamento de usuários
 
-### 1. Crie um usuário com permissões APENAS de Leitura.
+### 1. Crie um usuário com permissões APENAS de Leitura
 > use be-mean-final
 ```
 switched to db be-mean-final
@@ -2218,7 +2219,7 @@ switched to db be-mean-final
 ```
 { "ok" : 1 }
 ```
-### 2. Crie um usuário com permissões de Escrita e Leitura.
+### 2. Crie um usuário com permissões de Escrita e Leitura
 > db.runCommand({createUser: 'projrw',
 				pwd: 'rw123',
 				roles:['readWrite']
@@ -2227,7 +2228,7 @@ switched to db be-mean-final
 { "ok" : 1 }
 ```
 
-### 3. Adicionar o papel grantRolesToUser e revokeRole para o usuário com Escrita e Leitura.
+### 3. Adicionar o papel grantRolesToUser e revokeRole para o usuário com Escrita e Leitura
 
 Acredito que este item não esteja bem formulado pois `grantRolesToUser` é um comando e `revokeRole` é uma ação.
 Com isso, vou entender que a intenção seja possibilitar que o referido usuário seja, apenas, capaz de conceder e revogar papéis a outros usuários,
@@ -2362,7 +2363,7 @@ Verificando as credenciais do usuário 'projrw'.
 }
 ```
 
-### 4. Remover o papel grantRolesToUser para o usuário com Escrita e Leitura.
+### 4. Remover o papel grantRolesToUser para o usuário com Escrita e Leitura
 > db.runCommand( {revokeRolesFromUser: "projrw",
 roles: [{role: "projectGrantRole", db: "be-mean-final"}] 
 } )
@@ -2404,7 +2405,7 @@ Verificando as credenciais do usuário 'projrw'.
         "ok" : 1
 }
 ```
-### 5. Listar todos os usuários com seus papéis e ações.
+### 5. Listar todos os usuários com seus papéis e ações
 > db.runCommand( {usersInfo:['projrw','projr'],showPrivileges:true})
 ```
 {
@@ -2628,12 +2629,12 @@ Verificando as credenciais do usuário 'projrw'.
 ##Cluster
 
 Depois de criada toda sua base você deverá criar um cluster utilizando:
-
+```
  1 Router
  1 Config Server
  3 Shardings
  3 Replicas
-
+```
 ### Config Server(27019)
 
 1. Criação do diretório do config server
