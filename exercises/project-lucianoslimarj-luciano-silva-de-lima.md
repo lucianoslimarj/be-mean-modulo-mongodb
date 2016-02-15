@@ -3050,6 +3050,7 @@ mongos> db.runCommand({addShard:"rpl_shard3/localhost:27033", name:"shard_rpl_3"
 { "shardAdded" : "shard_rpl_3", "ok" : 1 }
 ```
 **Verificando o status do cluster**
+
 mongos> sh.status()
 ```
 --- Sharding Status ---
